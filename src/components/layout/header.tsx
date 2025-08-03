@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { AddTaskDialog } from '../add-task-dialog';
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 function getPageTitle(pathname: string) {
   if (pathname === '/') return 'Dashboard';
@@ -47,9 +48,11 @@ export function AppHeader() {
                 Add Task
             </Button>
         </AddTaskDialog>
-        <Button variant="ghost" size="icon" aria-label="Notifications">
-          <Bell className="h-5 w-5" />
-        </Button>
+        <Link href="/notifications">
+          <Button variant="ghost" size="icon" aria-label="Notifications">
+            <Bell className="h-5 w-5" />
+          </Button>
+        </Link>
       </div>
     </header>
   );

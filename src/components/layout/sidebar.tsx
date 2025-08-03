@@ -13,13 +13,16 @@ import {
 } from '@/components/ui/sidebar';
 import { UserAvatar } from '@/components/user-avatar';
 import {
+  Bell,
   BotMessageSquare,
   Calendar,
   CheckSquare2,
   Goal,
   LayoutDashboard,
+  Mail,
   NotebookText,
   Repeat,
+  School,
   Settings,
   Sun,
   Moon,
@@ -63,28 +66,13 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
+          <SidebarSeparator />
           <SidebarMenuItem>
             <Link href="/tasks" className="w-full">
                 <SidebarMenuButton isActive={useIsActive('/tasks')} tooltip="Tasks">
                 <CheckSquare2 />
                 Tasks
                 </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/calendar" className="w-full">
-                <SidebarMenuButton isActive={useIsActive('/calendar')} tooltip="Calendar">
-                <Calendar />
-                Calendar
-                </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/habits" className="w-full">
-              <SidebarMenuButton isActive={useIsActive('/habits')} tooltip="Habits">
-                <Repeat />
-                Habits
-              </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -96,6 +84,48 @@ export function AppSidebar() {
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
+            <Link href="/calendar" className="w-full">
+                <SidebarMenuButton isActive={useIsActive('/calendar')} tooltip="Calendar">
+                <Calendar />
+                Calendar
+                </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarSeparator />
+           <SidebarMenuItem>
+            <Link href="/email" className="w-full">
+              <SidebarMenuButton isActive={useIsActive('/email')} tooltip="Email">
+                <Mail />
+                Email
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link href="/notifications" className="w-full">
+              <SidebarMenuButton isActive={useIsActive('/notifications')} tooltip="Notifications">
+                <Bell />
+                Notifications
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+           <SidebarMenuItem>
+            <Link href="/classroom" className="w-full">
+              <SidebarMenuButton isActive={useIsActive('/classroom')} tooltip="Classroom">
+                <School />
+                Classroom
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarSeparator />
+          <SidebarMenuItem>
+            <Link href="/habits" className="w-full">
+              <SidebarMenuButton isActive={useIsActive('/habits')} tooltip="Habits">
+                <Repeat />
+                Habits
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
             <Link href="/goals" className="w-full">
               <SidebarMenuButton isActive={useIsActive('/goals')} tooltip="Goals">
                 <Goal />
@@ -103,6 +133,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
+          <SidebarSeparator />
           <SidebarMenuItem>
              <Link href="/" className="w-full">
                 <SidebarMenuButton isActive={useIsActive('/ai-assistant')} tooltip="AI Assistant">

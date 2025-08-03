@@ -1,6 +1,7 @@
+'use client';
 // src/services/taskService.ts
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 
 export interface Task {
     id: string;
@@ -9,6 +10,7 @@ export interface Task {
     completed: boolean;
     userId: string;
     createdAt: any;
+    completedAt?: Timestamp;
 }
 
 const tasksCollection = collection(db, 'tasks');
@@ -36,8 +38,12 @@ export const addTask = async (task: Omit<Task, 'id' | 'createdAt'>) => {
 
 export const updateTask = async (taskId: string, updates: Partial<Task>) => {
     const taskDoc = doc(db, 'tasks', taskId);
+    const updateData: Partial<Task> = { ...updates };
+    if (updates.completed) {
+        updateData.completedAt = Timestamp.now();
+    }
     try {
-        await updateDoc(taskDoc, updates);
+        await updateDoc(taskDoc, updateData);
     } catch (error) {
         console.error("Error updating task: ", error);
     }

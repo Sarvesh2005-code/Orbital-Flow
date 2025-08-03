@@ -5,8 +5,6 @@ import { HabitTracker } from '@/components/dashboard/habit-tracker';
 import { UpcomingDeadlines } from '@/components/dashboard/upcoming-deadlines';
 import { ProductivityChart } from '@/components/dashboard/productivity-chart';
 import { AiAssistant } from '@/components/dashboard/ai-assistant';
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 import ProtectedRoute from '@/components/layout/protected-route';
 
 export default function DashboardPage() {
@@ -20,9 +18,7 @@ export default function DashboardPage() {
             <HabitTracker />
           </div>
           <div className="lg:col-span-1 space-y-6">
-            <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
-              <ProductivityChart />
-            </Suspense>
+            <ProductivityChart />
             <UpcomingDeadlines />
           </div>
         </div>

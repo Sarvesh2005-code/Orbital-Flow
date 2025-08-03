@@ -1,4 +1,3 @@
-// src/components/dashboard/todays-focus.tsx
 'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { Task, getTasks, updateTask } from '@/services/taskService';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '../ui/skeleton';
+import Link from 'next/link';
 
 export function TodaysFocus() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -20,7 +20,13 @@ export function TodaysFocus() {
       const fetchTasks = async () => {
         setLoading(true);
         const userTasks = await getTasks(user.uid);
-        setTasks(userTasks);
+        const sortedTasks = userTasks
+          .filter(t => !t.completed)
+          .sort((a, b) => {
+            const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+          });
+        setTasks(sortedTasks.slice(0, 3));
         setLoading(false);
       };
       fetchTasks();
@@ -29,7 +35,7 @@ export function TodaysFocus() {
 
   const handleTaskCompletion = async (taskId: string, completed: boolean) => {
     await updateTask(taskId, { completed });
-    setTasks(tasks.map(task => task.id === taskId ? { ...task, completed } : task));
+    setTasks(tasks.filter(task => task.id !== taskId));
   };
 
 
@@ -48,7 +54,9 @@ export function TodaysFocus() {
     <Card className="shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className='flex flex-row items-center justify-between'>
         <CardTitle className="font-headline text-2xl">Today's Focus</CardTitle>
-        <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+        <Link href="/tasks">
+            <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+        </Link>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

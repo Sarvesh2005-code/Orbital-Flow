@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { productivityData } from '@/lib/placeholder-data';
 import { TrendingUp } from 'lucide-react';
 
@@ -17,31 +17,38 @@ export function ProductivityChart() {
       </CardHeader>
       <CardContent>
         <div className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={productivityData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-              <XAxis
-                dataKey="day"
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip
-                cursor={false}
-                content={<ChartTooltipContent 
-                    formatter={(value) => `${value} tasks`}
-                    indicator='dot'
-                />}
-              />
-              <Bar dataKey="completed" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <ChartContainer config={{
+              completed: {
+                label: "Tasks",
+                color: "hsl(var(--primary))",
+              },
+            }} className="h-full w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={productivityData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+                <XAxis
+                  dataKey="day"
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent 
+                      formatter={(value) => `${value} tasks`}
+                      indicator='dot'
+                  />}
+                />
+                <Bar dataKey="completed" fill="var(--color-completed)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartContainer>
         </div>
       </CardContent>
     </Card>

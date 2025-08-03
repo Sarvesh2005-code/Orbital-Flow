@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { PaintBrush, Bell, UserCircle, LifeBuoy, Zap } from 'lucide-react';
+import { Paintbrush, Bell, UserCircle, LifeBuoy, Zap } from 'lucide-react';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 
 export default function SettingsPage() {
@@ -32,7 +32,7 @@ export default function SettingsPage() {
         {/* Appearance Settings */}
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><PaintBrush className="h-6 w-6"/> Appearance</CardTitle>
+                <CardTitle className="flex items-center gap-2"><Paintbrush className="h-6 w-6"/> Appearance</CardTitle>
                 <CardDescription>Customize the look and feel of the application.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

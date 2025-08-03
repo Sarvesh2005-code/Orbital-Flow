@@ -13,7 +13,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const isAuthPage = pathname === '/login' || pathname === '/signup';
 
-  if (isAuthPage) {
+  if (isAuthPage || (!loading && !user && pathname === '/')) {
     return <>{children}</>;
   }
 
@@ -24,11 +24,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
     )
   }
-
-  if (!user) {
-    return <>{children}</>;
-  }
-
+  
   return (
     <SidebarProvider>
       <AppSidebar />

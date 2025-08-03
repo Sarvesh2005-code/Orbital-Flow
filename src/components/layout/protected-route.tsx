@@ -19,12 +19,16 @@ export default function ProtectedRoute({
     }
   }, [user, loading, router]);
 
-  if (loading || !user) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p>Loading...</p>
       </div>
     );
+  }
+  
+  if (!user) {
+    return null; // Don't render anything while redirecting
   }
 
   return <>{children}</>;

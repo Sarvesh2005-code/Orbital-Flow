@@ -19,16 +19,22 @@ export default function TasksPage() {
     const [newTaskPriority, setNewTaskPriority] = useState<'High' | 'Medium' | 'Low'>('Medium');
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const fetchTasks = async () => {
         if (user) {
-            const fetchTasks = async () => {
-                setLoading(true);
-                const userTasks = await getTasks(user.uid);
-                setTasks(userTasks.sort((a,b) => (a.createdAt > b.createdAt) ? -1 : 1));
-                setLoading(false);
-            };
-            fetchTasks();
+            setLoading(true);
+            const userTasks = await getTasks(user.uid);
+            // Firestore's serverTimestamp can be null initially, so we handle that
+            setTasks(userTasks.sort((a, b) => {
+                const aTime = a.createdAt?.seconds || 0;
+                const bTime = b.createdAt?.seconds || 0;
+                return bTime - aTime;
+            }));
+            setLoading(false);
         }
+    };
+
+    useEffect(() => {
+        fetchTasks();
     }, [user]);
 
     const handleAddTask = async (e: React.FormEvent) => {
@@ -42,10 +48,8 @@ export default function TasksPage() {
             userId: user.uid,
         };
         
-        // This is optimistic UI update. We can implement a more robust solution later.
         await addTask(newTask);
-        const userTasks = await getTasks(user.uid);
-        setTasks(userTasks.sort((a,b) => (a.createdAt > b.createdAt) ? -1 : 1));
+        await fetchTasks(); // Re-fetch tasks to get the latest list with the new task
 
         setNewTaskTitle('');
         setNewTaskPriority('Medium');
@@ -64,7 +68,7 @@ export default function TasksPage() {
     const getPriorityVariant = (priority: string) => {
         switch (priority?.toLowerCase()) {
           case 'high':
-            return 'default';
+            return 'destructive';
           case 'medium':
             return 'secondary';
           default:

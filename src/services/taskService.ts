@@ -9,7 +9,7 @@ export interface Task {
     priority: 'High' | 'Medium' | 'Low';
     completed: boolean;
     userId: string;
-    createdAt: any;
+    createdAt: Timestamp;
     completedAt?: Timestamp;
 }
 
@@ -25,7 +25,7 @@ export const getTasks = async (userId: string): Promise<Task[]> => {
     return tasks;
 };
 
-export const addTask = async (task: Omit<Task, 'id' | 'createdAt'>) => {
+export const addTask = async (task: Omit<Task, 'id' | 'createdAt' | 'completedAt'>) => {
     try {
         await addDoc(tasksCollection, {
             ...task,
@@ -36,12 +36,15 @@ export const addTask = async (task: Omit<Task, 'id' | 'createdAt'>) => {
     }
 };
 
-export const updateTask = async (taskId: string, updates: Partial<Task>) => {
+export const updateTask = async (taskId: string, updates: Partial<Omit<Task, 'id' | 'userId'>>) => {
     const taskDoc = doc(db, 'tasks', taskId);
     const updateData: Partial<Task> = { ...updates };
-    if (updates.completed) {
+    if (updates.completed === true) {
         updateData.completedAt = Timestamp.now();
+    } else if (updates.completed === false) {
+        updateData.completedAt = undefined;
     }
+
     try {
         await updateDoc(taskDoc, updateData);
     } catch (error) {

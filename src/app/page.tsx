@@ -1,3 +1,4 @@
+'use client';
 import { WelcomeHeader } from '@/components/dashboard/welcome-header';
 import { TodaysFocus } from '@/components/dashboard/todays-focus';
 import { HabitTracker } from '@/components/dashboard/habit-tracker';

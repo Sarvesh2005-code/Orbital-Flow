@@ -9,7 +9,28 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { getTasks } from '@/services/taskService';
 import {z} from 'genkit';
+
+const getTasksTool = ai.defineTool(
+    {
+      name: 'getTasks',
+      description: 'Returns a list of tasks for the current user.',
+      inputSchema: z.object({
+        userId: z.string().describe('The ID of the user to fetch tasks for.'),
+      }),
+      outputSchema: z.array(z.object({
+        id: z.string(),
+        title: z.string(),
+        priority: z.string(),
+        completed: z.boolean(),
+      })),
+    },
+    async (input) => {
+      return await getTasks(input.userId);
+    }
+  )
+
 
 const AnswerProductivityQueriesInputSchema = z.object({
   query: z.string().describe('The user query about their productivity.'),
@@ -30,7 +51,9 @@ const prompt = ai.definePrompt({
   name: 'answerProductivityQueriesPrompt',
   input: {schema: AnswerProductivityQueriesInputSchema},
   output: {schema: AnswerProductivityQueriesOutputSchema},
+  tools: [getTasksTool],
   prompt: `You are a personal productivity assistant. Your goal is to answer questions about the user's productivity.
+  If the user asks about their tasks, use the getTasks tool to fetch their tasks and answer based on the result.
 
   User ID: {{{userId}}}
   Query: {{{query}}}

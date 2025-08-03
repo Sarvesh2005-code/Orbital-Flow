@@ -12,10 +12,11 @@ import { useToast } from '@/hooks/use-toast';
 interface AddTaskDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    onTaskAdded?: () => void; // Callback to refresh task lists
     children?: React.ReactNode;
 }
 
-export function AddTaskDialog({ open, onOpenChange, children }: AddTaskDialogProps) {
+export function AddTaskDialog({ open, onOpenChange, onTaskAdded, children }: AddTaskDialogProps) {
     const { user } = useAuth();
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [newTaskPriority, setNewTaskPriority] = useState<'High' | 'Medium' | 'Low'>('Medium');
@@ -39,6 +40,7 @@ export function AddTaskDialog({ open, onOpenChange, children }: AddTaskDialogPro
             description: `"${newTaskTitle}" has been added to your tasks.`,
         });
 
+        onTaskAdded?.();
         setNewTaskTitle('');
         setNewTaskPriority('Medium');
         onOpenChange(false);

@@ -1,3 +1,4 @@
+// src/components/user-avatar.tsx
 'use client';
 
 import {
@@ -13,6 +14,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { LifeBuoy, LogOut } from 'lucide-react';
 
 export function UserAvatar() {
   const { user } = useAuth();
@@ -30,7 +32,7 @@ export function UserAvatar() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center gap-2 cursor-pointer">
+        <div className="flex items-center gap-2 cursor-pointer w-full">
             <Avatar className="h-9 w-9">
                 <AvatarImage src={user.photoURL ?? "https://placehold.co/40x40"} alt={user.displayName ?? 'User'} />
                 <AvatarFallback>{user.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
@@ -47,11 +49,15 @@ export function UserAvatar() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Settings</DropdownMenuItem>
-        <DropdownMenuItem>Upgrade to Pro</DropdownMenuItem>
+        <DropdownMenuItem>
+          <LifeBuoy className='mr-2' />
+          Support
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>
+          <LogOut className='mr-2' />
+          Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

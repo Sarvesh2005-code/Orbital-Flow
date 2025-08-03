@@ -1,41 +1,43 @@
+// src/components/dashboard/todays-focus.tsx
 'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '../ui/button';
 import { MoreHorizontal } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Task, getTasks, updateTask } from '@/services/taskService';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '../ui/skeleton';
 import Link from 'next/link';
 
-export function TodaysFocus() {
+export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
-  useEffect(() => {
+  const fetchTasks = useCallback(async () => {
     if (user) {
-      const fetchTasks = async () => {
-        setLoading(true);
-        const userTasks = await getTasks(user.uid);
-        const sortedTasks = userTasks
-          .filter(t => !t.completed)
-          .sort((a, b) => {
-            const priorityOrder = { High: 0, Medium: 1, Low: 2 };
-            return priorityOrder[a.priority] - priorityOrder[b.priority];
-          });
-        setTasks(sortedTasks.slice(0, 3));
-        setLoading(false);
-      };
-      fetchTasks();
+      setLoading(true);
+      const userTasks = await getTasks(user.uid);
+      const sortedTasks = userTasks
+        .filter(t => !t.completed)
+        .sort((a, b) => {
+          const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+          return priorityOrder[a.priority] - priorityOrder[b.priority];
+        });
+      setTasks(sortedTasks.slice(0, 3));
+      setLoading(false);
     }
   }, [user]);
 
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
   const handleTaskCompletion = async (taskId: string, completed: boolean) => {
     await updateTask(taskId, { completed });
-    setTasks(tasks.filter(task => task.id !== taskId));
+    onTaskUpdate(); // This will trigger a re-fetch in the parent component (dashboard)
   };
 
 
@@ -72,12 +74,12 @@ export function TodaysFocus() {
             tasks.map((task) => (
               <div key={task.id} className="flex items-center p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors">
                 <Checkbox
-                  id={task.id}
+                  id={`focus-${task.id}`}
                   checked={task.completed}
                   onCheckedChange={(checked) => handleTaskCompletion(task.id, !!checked)}
                   className="h-5 w-5"
                 />
-                <label htmlFor={task.id} className={`ml-3 flex-1 text-sm ${task.completed ? 'line-through text-muted-foreground' : 'text-card-foreground'}`}>
+                <label htmlFor={`focus-${task.id}`} className={`ml-3 flex-1 text-sm ${task.completed ? 'line-through text-muted-foreground' : 'text-card-foreground'}`}>
                   {task.title}
                 </label>
                 <Badge variant={getPriorityVariant(task.priority)} className="ml-auto">

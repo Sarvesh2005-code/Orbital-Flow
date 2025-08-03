@@ -6,15 +6,22 @@ import { UpcomingDeadlines } from '@/components/dashboard/upcoming-deadlines';
 import { ProductivityChart } from '@/components/dashboard/productivity-chart';
 import { AiAssistant } from '@/components/dashboard/ai-assistant';
 import ProtectedRoute from '@/components/layout/protected-route';
+import { useCallback, useState } from 'react';
 
 export default function DashboardPage() {
+  const [key, setKey] = useState(0);
+
+  const refreshDashboard = useCallback(() => {
+    setKey(prev => prev + 1);
+  }, []);
+
   return (
     <ProtectedRoute>
-      <div className="space-y-6">
+      <div className="space-y-6" key={key}>
         <WelcomeHeader />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
-            <TodaysFocus />
+            <TodaysFocus onTaskUpdate={refreshDashboard} />
             <HabitTracker />
           </div>
           <div className="lg:col-span-1 space-y-6">

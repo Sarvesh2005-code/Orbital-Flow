@@ -6,26 +6,29 @@ import { ProductivityChart } from '@/components/dashboard/productivity-chart';
 import { AiAssistant } from '@/components/dashboard/ai-assistant';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import ProtectedRoute from '@/components/layout/protected-route';
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
-      <WelcomeHeader />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          <TodaysFocus />
-          <HabitTracker />
+    <ProtectedRoute>
+      <div className="space-y-6">
+        <WelcomeHeader />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <TodaysFocus />
+            <HabitTracker />
+          </div>
+          <div className="lg:col-span-1 space-y-6">
+            <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
+              <ProductivityChart />
+            </Suspense>
+            <UpcomingDeadlines />
+          </div>
         </div>
-        <div className="lg:col-span-1 space-y-6">
-          <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
-            <ProductivityChart />
-          </Suspense>
-          <UpcomingDeadlines />
+        <div className="grid grid-cols-1">
+          <AiAssistant />
         </div>
       </div>
-      <div className="grid grid-cols-1">
-        <AiAssistant />
-      </div>
-    </div>
+    </ProtectedRoute>
   );
 }

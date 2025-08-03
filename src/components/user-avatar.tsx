@@ -9,26 +9,40 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from './ui/button';
-import { MoreHorizontal } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 export function UserAvatar() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-2 cursor-pointer">
             <Avatar className="h-9 w-9">
-                <AvatarImage src="https://placehold.co/40x40" alt="@janedoe" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage src={user.photoURL ?? "https://placehold.co/40x40"} alt={user.displayName ?? 'User'} />
+                <AvatarFallback>{user.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
             </Avatar>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col">
-            <span>Jane Doe</span>
+            <span>{user.displayName ?? 'User'}</span>
             <span className="text-xs font-normal text-muted-foreground">
-              jane.doe@example.com
+              {user.email}
             </span>
           </div>
         </DropdownMenuLabel>
@@ -37,7 +51,7 @@ export function UserAvatar() {
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Upgrade to Pro</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -50,7 +50,11 @@ export function ProductivityChart() {
           <ChartContainer config={{
               completed: {
                 label: "Tasks",
-                color: "hsl(var(--primary))",
+                color: "hsl(var(--chart-1))",
+              },
+               goals: {
+                label: "Goals",
+                color: "hsl(var(--chart-2))",
               },
             }} className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">

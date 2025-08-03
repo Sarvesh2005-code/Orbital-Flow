@@ -43,7 +43,7 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
   const getPriorityVariant = (priority: string) => {
     switch (priority?.toLowerCase()) {
       case 'high':
-        return 'destructive';
+        return 'default';
       case 'medium':
         return 'secondary';
       default:

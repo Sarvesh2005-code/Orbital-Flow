@@ -1,5 +1,4 @@
 // src/services/noteService.ts
-'use client';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, orderBy, Timestamp } from 'firebase/firestore';
 

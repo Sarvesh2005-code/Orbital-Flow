@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import ProtectedRoute from '@/components/layout/protected-route';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -39,7 +38,9 @@ export default function GoalsPage() {
     };
 
     useEffect(() => {
-        fetchGoals();
+        if (user) {
+            fetchGoals();
+        }
     }, [user]);
 
     const resetForm = () => {
@@ -98,7 +99,7 @@ export default function GoalsPage() {
     }
 
     return (
-        <ProtectedRoute>
+        <>
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-3xl font-bold">Your Goals</h1>
                 <Dialog open={isDialogOpen} onOpenChange={(open) => {
@@ -172,6 +173,6 @@ export default function GoalsPage() {
                     <p className="mt-1 text-sm text-muted-foreground">Click "Add Goal" to get started on your objectives.</p>
                 </div>
             )}
-        </ProtectedRoute>
+        </>
     );
 }

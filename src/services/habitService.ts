@@ -1,4 +1,4 @@
-'use client';
+// src/services/habitService.ts
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 

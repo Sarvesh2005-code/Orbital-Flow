@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import ProtectedRoute from '@/components/layout/protected-route';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -37,7 +36,9 @@ export default function NotesPage() {
     }
 
     useEffect(() => {
-        fetchNotes();
+        if (user) {
+            fetchNotes();
+        }
     }, [user]);
 
     useEffect(() => {
@@ -107,7 +108,7 @@ export default function NotesPage() {
     }
 
     return (
-        <ProtectedRoute>
+        <>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-10rem)]">
                 {/* Notes List */}
                 <Card className="lg:col-span-1 h-full flex flex-col">
@@ -223,6 +224,6 @@ export default function NotesPage() {
                     )}
                 </DialogContent>
             </Dialog>
-        </ProtectedRoute>
+        </>
     );
 }

@@ -1,7 +1,6 @@
 // src/app/notifications/page.tsx
 'use client';
 
-import ProtectedRoute from '@/components/layout/protected-route';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bell, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,46 +15,44 @@ const placeholderNotifications = [
 
 export default function NotificationsPage() {
     return (
-        <ProtectedRoute>
-            <div className="max-w-3xl mx-auto">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle className="flex items-center gap-2">
-                                <Bell className="h-6 w-6" />
-                                Notifications
-                            </CardTitle>
-                            <CardDescription>
-                                You have {placeholderNotifications.filter(n=>!n.hasOwnProperty('read')).length} unread notifications.
-                            </CardDescription>
-                        </div>
-                        <Button variant="ghost">
-                            <CheckCheck className="mr-2 h-4 w-4" />
-                            Mark all as read
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {placeholderNotifications.map(notification => (
-                                <div key={notification.id} className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
-                                    <Avatar className="mt-1">
-                                        <AvatarFallback className="bg-primary text-primary-foreground">
-                                            <Bell className="h-5 w-5" />
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex-grow">
-                                        <p className="font-medium">{notification.message}</p>
-                                        <p className="text-sm text-muted-foreground">{notification.time}</p>
-                                    </div>
+        <div className="max-w-3xl mx-auto">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle className="flex items-center gap-2">
+                            <Bell className="h-6 w-6" />
+                            Notifications
+                        </CardTitle>
+                        <CardDescription>
+                            You have {placeholderNotifications.filter(n=>!n.hasOwnProperty('read')).length} unread notifications.
+                        </CardDescription>
+                    </div>
+                    <Button variant="ghost">
+                        <CheckCheck className="mr-2 h-4 w-4" />
+                        Mark all as read
+                    </Button>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        {placeholderNotifications.map(notification => (
+                            <div key={notification.id} className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
+                                <Avatar className="mt-1">
+                                    <AvatarFallback className="bg-primary text-primary-foreground">
+                                        <Bell className="h-5 w-5" />
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-grow">
+                                    <p className="font-medium">{notification.message}</p>
+                                    <p className="text-sm text-muted-foreground">{notification.time}</p>
                                 </div>
-                            ))}
-                        </div>
-                        <div className="text-center pt-8">
-                             <p className="text-sm text-muted-foreground">This is a placeholder page for notifications and alarms.</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </ProtectedRoute>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="text-center pt-8">
+                         <p className="text-sm text-muted-foreground">This is a placeholder page for notifications and alarms.</p>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
     );
 }

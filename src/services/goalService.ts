@@ -1,5 +1,4 @@
 // src/services/goalService.ts
-'use client';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp, orderBy } from 'firebase/firestore';
 

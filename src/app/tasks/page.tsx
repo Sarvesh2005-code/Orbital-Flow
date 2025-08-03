@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Task, getTasks, addTask, updateTask, deleteTask } from '@/services/taskService';
-import ProtectedRoute from '@/components/layout/protected-route';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -34,7 +33,9 @@ export default function TasksPage() {
     };
 
     useEffect(() => {
-        fetchTasks();
+        if (user) {
+            fetchTasks();
+        }
     }, [user]);
 
     const handleAddTask = async (e: React.FormEvent) => {
@@ -78,71 +79,69 @@ export default function TasksPage() {
 
 
     return (
-        <ProtectedRoute>
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Add a new task</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleAddTask} className="flex flex-col sm:flex-row gap-2">
-                            <Input
-                                type="text"
-                                placeholder="Task title..."
-                                value={newTaskTitle}
-                                onChange={(e) => setNewTaskTitle(e.target.value)}
-                                className="flex-grow"
-                            />
-                            <Select onValueChange={(value: 'High' | 'Medium' | 'Low') => setNewTaskPriority(value)} value={newTaskPriority}>
-                                <SelectTrigger className="w-full sm:w-[180px]">
-                                    <SelectValue placeholder="Priority" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="High">High</SelectItem>
-                                    <SelectItem value="Medium">Medium</SelectItem>
-                                    <SelectItem value="Low">Low</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Button type="submit">Add Task</Button>
-                        </form>
-                    </CardContent>
-                </Card>
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Add a new task</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleAddTask} className="flex flex-col sm:flex-row gap-2">
+                        <Input
+                            type="text"
+                            placeholder="Task title..."
+                            value={newTaskTitle}
+                            onChange={(e) => setNewTaskTitle(e.target.value)}
+                            className="flex-grow"
+                        />
+                        <Select onValueChange={(value: 'High' | 'Medium' | 'Low') => setNewTaskPriority(value)} value={newTaskPriority}>
+                            <SelectTrigger className="w-full sm:w-[180px]">
+                                <SelectValue placeholder="Priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="High">High</SelectItem>
+                                <SelectItem value="Medium">Medium</SelectItem>
+                                <SelectItem value="Low">Low</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Button type="submit">Add Task</Button>
+                    </form>
+                </CardContent>
+            </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Your Tasks</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                        {loading ? (
-                            <>
-                                <Skeleton className="h-10 w-full" />
-                                <Skeleton className="h-10 w-full" />
-                                <Skeleton className="h-10 w-full" />
-                             </>
-                        ) : tasks.length === 0 ? (
-                            <p className="text-muted-foreground text-center py-4">You have no tasks yet.</p>
-                        ) : (
-                            tasks.map(task => (
-                                <div key={task.id} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50">
-                                    <Checkbox
-                                        checked={task.completed}
-                                        onCheckedChange={(checked) => handleToggleTask(task.id, !!checked)}
-                                    />
-                                    <span className={`flex-grow ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                                        {task.title}
-                                    </span>
-                                    <Badge variant={getPriorityVariant(task.priority)}>{task.priority}</Badge>
-                                    <Button variant="ghost" size="icon" onClick={() => handleDeleteTask(task.id)}>
-                                        <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                                    </Button>
-                                </div>
-                            ))
-                        )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </ProtectedRoute>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Your Tasks</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                    {loading ? (
+                        <>
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                         </>
+                    ) : tasks.length === 0 ? (
+                        <p className="text-muted-foreground text-center py-4">You have no tasks yet.</p>
+                    ) : (
+                        tasks.map(task => (
+                            <div key={task.id} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50">
+                                <Checkbox
+                                    checked={task.completed}
+                                    onCheckedChange={(checked) => handleToggleTask(task.id, !!checked)}
+                                />
+                                <span className={`flex-grow ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                                    {task.title}
+                                </span>
+                                <Badge variant={getPriorityVariant(task.priority)}>{task.priority}</Badge>
+                                <Button variant="ghost" size="icon" onClick={() => handleDeleteTask(task.id)}>
+                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                                </Button>
+                            </div>
+                        ))
+                    )}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
     );
 }

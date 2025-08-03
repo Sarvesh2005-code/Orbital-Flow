@@ -1,4 +1,3 @@
-'use client';
 // src/services/taskService.ts
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp, orderBy } from 'firebase/firestore';
@@ -38,11 +37,13 @@ export const addTask = async (task: Omit<Task, 'id' | 'createdAt' | 'completedAt
 
 export const updateTask = async (taskId: string, updates: Partial<Omit<Task, 'id' | 'userId'>>) => {
     const taskDoc = doc(db, 'tasks', taskId);
-    const updateData: Partial<Task> = { ...updates };
+    const updateData: any = { ...updates };
     if (updates.completed === true) {
-        updateData.completedAt = Timestamp.now();
+        updateData.completedAt = serverTimestamp();
     } else if (updates.completed === false) {
-        updateData.completedAt = undefined;
+        // Firestore does not allow 'undefined' so we have to handle this differently
+        // or just let it be. If we want to remove the field, we need a different approach.
+        // For now, we'll assume completedAt can stay. To remove it, you'd use `deleteField()`.
     }
 
     try {

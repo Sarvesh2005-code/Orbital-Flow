@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import ProtectedRoute from '@/components/layout/protected-route';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Task, getTasks } from '@/services/taskService';
@@ -68,65 +67,63 @@ export default function CalendarPage() {
     };
 
     return (
-        <ProtectedRoute>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2">
-                    <Card>
-                        <CardContent className="p-2">
-                        {loading ? <Skeleton className="w-full h-[350px]" /> :
-                            <Calendar
-                                mode="single"
-                                selected={date}
-                                onSelect={setDate}
-                                className="w-full"
-                                modifiers={{ 
-                                    event: eventDays,
-                                }}
-                                modifiersClassNames={{
-                                    event: 'bg-accent/50 rounded-full',
-                                }}
-                            />
-                        }
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="lg:col-span-1">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>
-                                Schedule for {date ? format(date, 'MMMM do, yyyy') : '...'}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 h-[350px] overflow-y-auto">
-                            {loading ? (
-                                <>
-                                    <Skeleton className="h-12 w-full" />
-                                    <Skeleton className="h-12 w-full" />
-                                    <Skeleton className="h-12 w-full" />
-                                </>
-                            ) : selectedDayEvents.length > 0 ? (
-                                selectedDayEvents.map(event => (
-                                    <div key={`${event.type}-${event.id}`} className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
-                                        {event.type === 'task' ? (
-                                            <CheckCircle2 className={`mt-1 h-5 w-5 ${event.completed ? 'text-green-500' : 'text-muted-foreground' }`} />
-                                        ) : (
-                                            <CalendarClock className="mt-1 h-5 w-5 text-accent" />
-                                        )}
-                                        <div className="flex-grow">
-                                            <p className="font-semibold">{event.title}</p>
-                                            {event.type === 'task' && (
-                                                <Badge variant={getPriorityVariant(event.priority)}>{event.priority}</Badge>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-muted-foreground text-center py-8">No events for this day.</p>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+                <Card>
+                    <CardContent className="p-2">
+                    {loading ? <Skeleton className="w-full h-[350px]" /> :
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            className="w-full"
+                            modifiers={{ 
+                                event: eventDays,
+                            }}
+                            modifiersClassNames={{
+                                event: 'bg-accent/50 rounded-full',
+                            }}
+                        />
+                    }
+                    </CardContent>
+                </Card>
             </div>
-        </ProtectedRoute>
+            <div className="lg:col-span-1">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>
+                            Schedule for {date ? format(date, 'MMMM do, yyyy') : '...'}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 h-[350px] overflow-y-auto">
+                        {loading ? (
+                            <>
+                                <Skeleton className="h-12 w-full" />
+                                <Skeleton className="h-12 w-full" />
+                                <Skeleton className="h-12 w-full" />
+                            </>
+                        ) : selectedDayEvents.length > 0 ? (
+                            selectedDayEvents.map(event => (
+                                <div key={`${event.type}-${event.id}`} className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
+                                    {event.type === 'task' ? (
+                                        <CheckCircle2 className={`mt-1 h-5 w-5 ${event.completed ? 'text-green-500' : 'text-muted-foreground' }`} />
+                                    ) : (
+                                        <CalendarClock className="mt-1 h-5 w-5 text-accent" />
+                                    )}
+                                    <div className="flex-grow">
+                                        <p className="font-semibold">{event.title}</p>
+                                        {event.type === 'task' && (
+                                            <Badge variant={getPriorityVariant(event.priority)}>{event.priority}</Badge>
+                                        )}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-muted-foreground text-center py-8">No events for this day.</p>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     );
 }

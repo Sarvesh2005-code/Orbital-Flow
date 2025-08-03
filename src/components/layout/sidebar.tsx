@@ -133,15 +133,6 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
-          <SidebarSeparator />
-          <SidebarMenuItem>
-             <Link href="/" className="w-full">
-                <SidebarMenuButton isActive={useIsActive('/ai-assistant')} tooltip="AI Assistant">
-                <BotMessageSquare />
-                AI Assistant
-                </SidebarMenuButton>
-             </Link>
-          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
       <SidebarSeparator />
@@ -149,7 +140,11 @@ export function AppSidebar() {
          <div className="flex items-center justify-center gap-2 group-data-[collapsible=icon]:hidden">
              <Button variant={!isDarkMode ? 'secondary' : 'ghost'} size="icon" className="flex-1 justify-center" onClick={() => toggleDarkMode(false)}><Sun className="size-4" /></Button>
              <Button variant={isDarkMode ? 'secondary' : 'ghost'} size="icon" className="flex-1 justify-center" onClick={() => toggleDarkMode(true)}><Moon className="size-4" /></Button>
-             <Button variant="ghost" size="icon" className="flex-1 justify-center"><Settings className="size-4" /></Button>
+             <Link href="/settings" className="flex-1">
+                <Button variant="ghost" size="icon" className="w-full justify-center">
+                    <Settings className="size-4" />
+                </Button>
+            </Link>
          </div>
          <div className="flex items-center gap-2">
             <UserAvatar />

@@ -1,7 +1,7 @@
 'use client';
 // src/services/taskService.ts
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp, orderBy } from 'firebase/firestore';
 
 export interface Task {
     id: string;
@@ -16,7 +16,7 @@ export interface Task {
 const tasksCollection = collection(db, 'tasks');
 
 export const getTasks = async (userId: string): Promise<Task[]> => {
-    const q = query(tasksCollection, where('userId', '==', userId));
+    const q = query(tasksCollection, where('userId', '==', userId), orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
     const tasks: Task[] = [];
     querySnapshot.forEach((doc) => {

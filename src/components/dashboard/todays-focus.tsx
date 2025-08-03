@@ -16,24 +16,23 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
-  const fetchTasks = useCallback(async () => {
-    if (user) {
-      setLoading(true);
-      const userTasks = await getTasks(user.uid);
-      const sortedTasks = userTasks
-        .filter(t => !t.completed)
-        .sort((a, b) => {
-          const priorityOrder = { High: 0, Medium: 1, Low: 2 };
-          return priorityOrder[a.priority] - priorityOrder[b.priority];
-        });
-      setTasks(sortedTasks.slice(0, 3));
-      setLoading(false);
-    }
-  }, [user]);
-
   useEffect(() => {
+    const fetchTasks = async () => {
+      if (user) {
+        setLoading(true);
+        const userTasks = await getTasks(user.uid);
+        const sortedTasks = userTasks
+          .filter(t => !t.completed)
+          .sort((a, b) => {
+            const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+          });
+        setTasks(sortedTasks.slice(0, 3));
+        setLoading(false);
+      }
+    };
     fetchTasks();
-  }, [fetchTasks]);
+  }, [user, onTaskUpdate]); // Re-run effect when onTaskUpdate changes (i.e. parent triggers refresh)
 
   const handleTaskCompletion = async (taskId: string, completed: boolean) => {
     await updateTask(taskId, { completed });

@@ -75,16 +75,20 @@ export function AppSidebar() {
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton isActive={useIsActive('/habits')} tooltip="Habits">
-              <Repeat />
-              Habits
-            </SidebarMenuButton>
+            <Link href="/habits" className="w-full">
+              <SidebarMenuButton isActive={useIsActive('/habits')} tooltip="Habits">
+                <Repeat />
+                Habits
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton isActive={useIsActive('/notes')} tooltip="Notes">
-              <NotebookText />
-              Notes
-            </SidebarMenuButton>
+            <Link href="/notes" className="w-full">
+              <SidebarMenuButton isActive={useIsActive('/notes')} tooltip="Notes">
+                <NotebookText />
+                Notes
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton isActive={useIsActive('/goals')} tooltip="Goals">

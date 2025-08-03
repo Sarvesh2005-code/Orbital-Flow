@@ -26,6 +26,7 @@ import {
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 
 const OrbityLogo = () => (
     <div className="flex items-center gap-2.5">
@@ -42,6 +43,7 @@ const OrbityLogo = () => (
 export function AppSidebar() {
   const pathname = usePathname();
   const useIsActive = (path: string) => pathname === path;
+  const { user } = useAuth();
 
   return (
     <Sidebar variant="sidebar" collapsible="icon">
@@ -91,10 +93,12 @@ export function AppSidebar() {
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton isActive={useIsActive('/goals')} tooltip="Goals">
-              <Goal />
-              Goals
-            </SidebarMenuButton>
+            <Link href="/goals" className="w-full">
+              <SidebarMenuButton isActive={useIsActive('/goals')} tooltip="Goals">
+                <Goal />
+                Goals
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton isActive={useIsActive('/ai-assistant')} tooltip="AI Assistant">
@@ -114,8 +118,8 @@ export function AppSidebar() {
          <div className="flex items-center gap-2">
             <UserAvatar />
             <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-                <span className="font-semibold text-sm text-sidebar-foreground">Jane Doe</span>
-                <span className="text-xs text-sidebar-foreground/70">Pro Member</span>
+                <span className="font-semibold text-sm text-sidebar-foreground">{user?.displayName || 'User'}</span>
+                <span className="text-xs text-sidebar-foreground/70">{user?.email}</span>
             </div>
          </div>
       </SidebarFooter>

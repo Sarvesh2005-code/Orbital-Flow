@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Note, getNotes, addNote, updateNote, deleteNote } from '@/services/noteService';
 import { summarizeNote } from '@/ai/flows/summarize-notes';
-import { Plus, Trash2, Edit, Sparkles, Loader2, BotMessageSquare, AlertTriangle } from 'lucide-react';
+import { Plus, Trash2, Edit, Sparkles, Loader2, BotMessageSquare, AlertTriangle, FileText } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -188,7 +188,7 @@ export default function NotesPage() {
                             </>
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full text-center">
-                                <NotebookText className="h-16 w-16 text-muted-foreground" />
+                                <FileText className="h-16 w-16 text-muted-foreground" />
                                 <h2 className="mt-4 text-2xl font-semibold">Select a note to view or edit</h2>
                                 <p className="mt-2 text-muted-foreground">Or create a new one to get started.</p>
                                 <Button className="mt-4" onClick={handleNewNote}>

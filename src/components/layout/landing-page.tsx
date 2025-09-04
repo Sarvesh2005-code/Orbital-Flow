@@ -1,4 +1,4 @@
- // src/components/layout/landing-page.tsx
+// src/components/layout/landing-page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import {
     Sparkles, Zap, Target, Users, NotebookText, Search, Cloud, 
     Smartphone, Shield, Sun, Moon, FileText, Brain, PenTool, Check,
     Twitter, Github, Linkedin, Mail, MapPin, Phone, Globe,
-    Star, TrendingUp, Layers, Lock, Palette
+    Star, TrendingUp, Layers, Lock, Palette, Menu, X
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -45,35 +45,47 @@ const OrbitalFlowLogo = ({ isDark }: { isDark: boolean }) => {
     );
 };
 
-const AnimatedCounter = ({ target, label, isDark }: { target: number; label: string; isDark: boolean }) => {
+const AnimatedCounter = ({ target, label, suffix = '+', isDark, delay = 0 }: { 
+    target: number; 
+    label: string; 
+    suffix?: string;
+    isDark: boolean;
+    delay?: number;
+}) => {
     const [count, setCount] = useState(0);
+    const [hasStarted, setHasStarted] = useState(false);
     
     useEffect(() => {
-        const duration = 2000;
-        const steps = 60;
-        const increment = target / steps;
-        const stepDuration = duration / steps;
+        const timer = setTimeout(() => {
+            setHasStarted(true);
+            const duration = 2500;
+            const steps = 100;
+            const increment = target / steps;
+            const stepDuration = duration / steps;
+            
+            let current = 0;
+            const countTimer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    setCount(target);
+                    clearInterval(countTimer);
+                } else {
+                    setCount(Math.floor(current));
+                }
+            }, stepDuration);
+            
+            return () => clearInterval(countTimer);
+        }, delay);
         
-        let current = 0;
-        const timer = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-                setCount(target);
-                clearInterval(timer);
-            } else {
-                setCount(Math.floor(current));
-            }
-        }, stepDuration);
-        
-        return () => clearInterval(timer);
-    }, [target]);
+        return () => clearTimeout(timer);
+    }, [target, delay]);
     
     return (
         <div className="text-center group">
-            <div className={`text-4xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} mb-2 group-hover:scale-110 transition-transform duration-300`}>
-                {count.toLocaleString()}+
+            <div className={`text-3xl sm:text-4xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} mb-2 group-hover:scale-110 transition-all duration-300 ${hasStarted ? 'animate-pulse' : ''}`}>
+                {count.toLocaleString()}{suffix}
             </div>
-            <div className={`text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-600'} uppercase tracking-wider`}>
+            <div className={`text-xs sm:text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-600'} uppercase tracking-wider`}>
                 {label}
             </div>
         </div>
@@ -116,64 +128,75 @@ const FeatureCard = ({ icon, title, description, delay = 0, isDark }: {
     </div>
 );
 
-const PricingCard = ({ title, price, period, features, popular = false, isDark }: {
+const PricingCard = ({ title, price, period, features, popular = false, isDark, onSelect }: {
     title: string;
     price: string;
     period: string;
     features: string[];
     popular?: boolean;
     isDark: boolean;
-}) => (
-    <div className={`relative p-8 rounded-3xl border transition-all duration-500 hover:scale-[1.02] ${
-        popular 
-            ? 'bg-gradient-to-br from-orange-500/10 via-pink-500/10 to-rose-500/10 border-orange-500/30 shadow-xl shadow-orange-500/10'
-            : isDark 
-                ? 'bg-zinc-900/40 border-zinc-800 hover:border-zinc-700' 
-                : 'bg-white/60 border-zinc-200 hover:border-zinc-300'
-    } backdrop-blur-xl`}>
-        {popular && (
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                    Most Popular
+    onSelect: () => void;
+}) => {
+    const [isHovered, setIsHovered] = useState(false);
+    
+    return (
+        <div 
+            className={`relative p-6 sm:p-8 rounded-2xl sm:rounded-3xl border transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 ${
+                popular 
+                    ? 'bg-gradient-to-br from-orange-500/10 via-pink-500/10 to-rose-500/10 border-orange-500/30 shadow-xl shadow-orange-500/10'
+                    : isDark 
+                        ? 'bg-zinc-900/40 border-zinc-800 hover:border-zinc-700' 
+                        : 'bg-white/60 border-zinc-200 hover:border-zinc-300'
+            } backdrop-blur-xl cursor-pointer group`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {popular && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium animate-pulse">
+                        Most Popular
+                    </div>
+                </div>
+            )}
+            <div className="text-center mb-6 sm:mb-8">
+                <h3 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-pink-500 group-hover:bg-clip-text transition-all duration-300`}>
+                    {title}
+                </h3>
+                <div className="flex items-baseline justify-center gap-1">
+                    <span className={`text-4xl sm:text-5xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} transition-all duration-300 ${isHovered ? 'scale-110' : ''}`}>
+                        {price}
+                    </span>
+                    <span className={`text-base sm:text-lg ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                        {period}
+                    </span>
                 </div>
             </div>
-        )}
-        <div className="text-center mb-8">
-            <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} mb-2`}>
-                {title}
-            </h3>
-            <div className="flex items-baseline justify-center gap-1">
-                <span className={`text-5xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                    {price}
-                </span>
-                <span className={`text-lg ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                    {period}
-                </span>
-            </div>
+            <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                {features.map((feature, index) => (
+                    <li key={index} className="flex items-start gap-3 text-sm sm:text-base">
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span className={`${isDark ? 'text-zinc-300' : 'text-zinc-600'} leading-relaxed`}>
+                            {feature}
+                        </span>
+                    </li>
+                ))}
+            </ul>
+            <Button 
+                className={`w-full text-sm sm:text-base font-semibold transition-all duration-300 group-hover:scale-105 ${
+                    popular 
+                        ? 'bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl' 
+                        : isDark 
+                            ? 'bg-zinc-800 hover:bg-zinc-700 text-white hover:shadow-lg' 
+                            : 'bg-zinc-900 hover:bg-zinc-800 text-white hover:shadow-lg'
+                }`}
+                size="lg"
+                onClick={onSelect}
+            >
+                {title === 'Starter' ? 'Start Free' : 'Choose Plan'}
+            </Button>
         </div>
-        <ul className="space-y-4 mb-8">
-            {features.map((feature, index) => (
-                <li key={index} className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    <span className={`${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
-                        {feature}
-                    </span>
-                </li>
-            ))}
-        </ul>
-        <Button 
-            className={`w-full ${popular 
-                ? 'bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white' 
-                : isDark 
-                    ? 'bg-zinc-800 hover:bg-zinc-700 text-white' 
-                    : 'bg-zinc-900 hover:bg-zinc-800 text-white'
-            }`}
-            size="lg"
-        >
-            Get Started
-        </Button>
-    </div>
-);
+    );
+};
 
 const FloatingElement = ({ children, delay = 0, duration = 6 }: { 
     children: React.ReactNode; 
@@ -194,6 +217,8 @@ const FloatingElement = ({ children, delay = 0, duration = 6 }: {
 export function LandingPage() {
     const [isVisible, setIsVisible] = useState(false);
     const [isDark, setIsDark] = useState(true);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
     
     useEffect(() => {
         setIsVisible(true);
@@ -201,12 +226,114 @@ export function LandingPage() {
         if (savedTheme) {
             setIsDark(savedTheme === 'dark');
         }
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.getAttribute('data-section');
+                        if (sectionId) {
+                            setVisibleSections(prev => new Set([...prev, sectionId]));
+                        }
+                    }
+                });
+            },
+            {
+                threshold: 0.1,
+                rootMargin: '50px 0px -50px 0px'
+            }
+        );
+
+        // Observe all sections
+        const sections = document.querySelectorAll('[data-section]');
+        sections.forEach((section) => observer.observe(section));
+
+        return () => {
+            sections.forEach((section) => observer.unobserve(section));
+        };
     }, []);
 
     const toggleTheme = () => {
         const newTheme = !isDark;
         setIsDark(newTheme);
         localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    };
+
+    const scrollToSection = (sectionId: string) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+        setMobileMenuOpen(false);
+    };
+
+    const handlePlanSelection = (planName: string) => {
+        if (planName === 'Starter') {
+            // Redirect to signup for free plan
+            window.location.href = '/signup';
+        } else {
+            // For paid plans, you could integrate with Stripe or other payment processor
+            alert(`Selected ${planName} plan! This would redirect to payment processing.`);
+            // window.location.href = `/checkout?plan=${planName.toLowerCase()}`;
+        }
+    };
+
+    const handleContactSales = () => {
+        // Open email client or contact form
+        window.location.href = 'mailto:sales@orbital-flow.com?subject=Custom Plan Inquiry&body=Hi, I\'m interested in learning more about custom pricing plans for my team.';
+    };
+
+    // Social media and footer link handlers
+    const handleSocialClick = (platform: string) => {
+        const urls = {
+            twitter: 'https://twitter.com/orbitalflow',
+            github: 'https://github.com/orbital-flow',
+            linkedin: 'https://linkedin.com/company/orbital-flow',
+            email: 'mailto:hello@orbital-flow.com'
+        };
+        window.open(urls[platform as keyof typeof urls], '_blank');
+    };
+
+    const handleFooterLink = (link: string) => {
+        const routes = {
+            'Features': '#features',
+            'Pricing': '#pricing',
+            'About': '#about',
+            'Updates': '/updates',
+            'Beta Program': '/beta',
+            'Roadmap': '/roadmap',
+            'Documentation': '/docs',
+            'API Reference': '/docs/api',
+            'Blog': '/blog',
+            'Community': 'https://community.orbital-flow.com',
+            'Help Center': '/help',
+            'Careers': '/careers',
+            'Press': '/press',
+            'Partners': '/partners',
+            'Contact': 'mailto:hello@orbital-flow.com',
+            'Privacy Policy': '/privacy',
+            'Terms of Service': '/terms',
+            'Cookie Policy': '/cookies',
+            'GDPR': '/gdpr'
+        };
+        
+        const route = routes[link as keyof typeof routes];
+        if (route) {
+            if (route.startsWith('#')) {
+                scrollToSection(route.substring(1));
+            } else if (route.startsWith('http')) {
+                window.open(route, '_blank');
+            } else if (route.startsWith('mailto:')) {
+                window.location.href = route;
+            } else {
+                // For now, show alert since these pages don't exist yet
+                alert(`This would navigate to: ${route}`);
+            }
+        }
     };
 
     return (
@@ -254,39 +381,123 @@ export function LandingPage() {
                 <div className="absolute top-2/3 left-1/3 w-64 h-64 bg-gradient-to-r from-rose-500/10 via-orange-500/10 to-pink-500/10 rounded-full blur-2xl animate-pulse opacity-30" style={{ animationDelay: '4s' }}></div>
             </div>
 
-            {/* Header */}
+            {/* Responsive Header */}
             <header className={`fixed top-0 left-0 right-0 z-50 ${isDark 
-                ? 'bg-zinc-950/80 border-zinc-800' 
-                : 'bg-white/80 border-zinc-200'
+                ? 'bg-zinc-950/95 border-zinc-800' 
+                : 'bg-white/95 border-zinc-200'
             } backdrop-blur-xl border-b transition-all duration-500`}>
-                <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+                <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
                     <OrbitalFlowLogo isDark={isDark} />
-                    <nav className="hidden md:flex items-center gap-8">
-                        <a href="#features" className={`font-medium ${isDark ? 'text-zinc-300 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors hover:scale-105 transform`}>Features</a>
-                        <a href="#pricing" className={`font-medium ${isDark ? 'text-zinc-300 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors hover:scale-105 transform`}>Pricing</a>
-                        <a href="#about" className={`font-medium ${isDark ? 'text-zinc-300 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors hover:scale-105 transform`}>About</a>
+                    
+                    {/* Desktop Navigation */}
+                    <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+                        <button 
+                            onClick={() => scrollToSection('features')}
+                            className={`font-medium ${isDark ? 'text-zinc-300 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-all duration-200 hover:scale-105 transform cursor-pointer`}
+                        >
+                            Features
+                        </button>
+                        <button 
+                            onClick={() => scrollToSection('pricing')}
+                            className={`font-medium ${isDark ? 'text-zinc-300 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-all duration-200 hover:scale-105 transform cursor-pointer`}
+                        >
+                            Pricing
+                        </button>
+                        <button 
+                            onClick={() => scrollToSection('about')}
+                            className={`font-medium ${isDark ? 'text-zinc-300 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-all duration-200 hover:scale-105 transform cursor-pointer`}
+                        >
+                            About
+                        </button>
                     </nav>
-                    <div className="flex items-center gap-4">
+                    
+                    {/* Desktop Actions */}
+                    <div className="hidden md:flex items-center gap-3 lg:gap-4">
                         <Button 
                             variant="ghost" 
                             size="icon" 
                             onClick={toggleTheme}
                             className={`${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all hover:scale-110`}
+                            aria-label="Toggle theme"
                         >
-                            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            {isDark ? <Sun className="w-4 h-4 lg:w-5 lg:h-5" /> : <Moon className="w-4 h-4 lg:w-5 lg:h-5" />}
                         </Button>
                         <Link href="/login">
-                            <Button variant="ghost" className={`font-medium ${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all hover:scale-105`}>
+                            <Button variant="ghost" className={`font-medium text-sm lg:text-base px-3 lg:px-4 ${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all hover:scale-105`}>
                                 Login
                             </Button>
                         </Link>
                         <Link href="/signup">
-                            <Button className="bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 border-0 text-white font-medium shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                            <Button className="bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 border-0 text-white font-medium text-sm lg:text-base px-3 lg:px-4 shadow-lg hover:shadow-xl transition-all hover:scale-105">
                                 Get Started
                             </Button>
                         </Link>
                     </div>
+                    
+                    {/* Mobile Actions */}
+                    <div className="flex md:hidden items-center gap-2">
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={toggleTheme}
+                            className={`${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all hover:scale-110`}
+                            aria-label="Toggle theme"
+                        >
+                            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className={`${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all hover:scale-110`}
+                            aria-label="Toggle menu"
+                        >
+                            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                        </Button>
+                    </div>
                 </div>
+                
+                {/* Mobile Menu */}
+                {mobileMenuOpen && (
+                    <div className={`md:hidden absolute top-full left-0 right-0 ${isDark 
+                        ? 'bg-zinc-950/98 border-zinc-800' 
+                        : 'bg-white/98 border-zinc-200'
+                    } backdrop-blur-xl border-b shadow-xl`}>
+                        <nav className="container mx-auto px-4 py-6 space-y-4">
+                            <button 
+                                onClick={() => scrollToSection('features')}
+                                className={`block w-full text-left font-medium py-3 px-4 rounded-xl ${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all duration-200`}
+                            >
+                                Features
+                            </button>
+                            <button 
+                                onClick={() => scrollToSection('pricing')}
+                                className={`block w-full text-left font-medium py-3 px-4 rounded-xl ${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all duration-200`}
+                            >
+                                Pricing
+                            </button>
+                            <button 
+                                onClick={() => scrollToSection('about')}
+                                className={`block w-full text-left font-medium py-3 px-4 rounded-xl ${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all duration-200`}
+                            >
+                                About
+                            </button>
+                            
+                            <div className="pt-4 border-t border-zinc-800 space-y-3">
+                                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                                    <Button variant="ghost" className={`w-full justify-start font-medium ${isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'} transition-all`}>
+                                        Login
+                                    </Button>
+                                </Link>
+                                <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                                    <Button className="w-full bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 border-0 text-white font-medium shadow-lg hover:shadow-xl transition-all">
+                                        Get Started
+                                    </Button>
+                                </Link>
+                            </div>
+                        </nav>
+                    </div>
+                )}
             </header>
 
             <main className="relative z-10">
@@ -453,10 +664,40 @@ export function LandingPage() {
                         </div>
 
                         {/* Enhanced Stats Section */}
-                        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
-                            <AnimatedCounter target={500} label="Notes Created" isDark={isDark} />
-                            <AnimatedCounter target={50} label="Active Users" isDark={isDark} />
-                            <AnimatedCounter target={99} label="Uptime %" isDark={isDark} />
+                        <div className="mt-16 sm:mt-24">
+                            <div className={`${isDark 
+                                ? 'bg-zinc-900/30 border-zinc-800' 
+                                : 'bg-white/40 border-zinc-200'
+                            } backdrop-blur-xl rounded-2xl sm:rounded-3xl border p-8 sm:p-12 shadow-xl max-w-4xl mx-auto`}>
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                                    <AnimatedCounter 
+                                        target={15420} 
+                                        label="Happy Users" 
+                                        isDark={isDark} 
+                                        delay={0}
+                                    />
+                                    <AnimatedCounter 
+                                        target={127000} 
+                                        label="Tasks Completed" 
+                                        isDark={isDark} 
+                                        delay={200}
+                                    />
+                                    <AnimatedCounter 
+                                        target={99.9} 
+                                        label="Uptime" 
+                                        suffix="%" 
+                                        isDark={isDark} 
+                                        delay={400}
+                                    />
+                                    <AnimatedCounter 
+                                        target={24} 
+                                        label="Hours Support" 
+                                        suffix="/7" 
+                                        isDark={isDark} 
+                                        delay={600}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -563,7 +804,7 @@ export function LandingPage() {
                             </p>
                         </div>
                         
-                        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        <div className="grid gap-6 sm:gap-8 max-w-6xl mx-auto md:grid-cols-3">
                             <PricingCard
                                 title="Starter"
                                 price="Free"
@@ -576,6 +817,7 @@ export function LandingPage() {
                                     "Community support"
                                 ]}
                                 isDark={isDark}
+                                onSelect={() => handlePlanSelection('Starter')}
                             />
                             <PricingCard
                                 title="Pro"
@@ -592,6 +834,7 @@ export function LandingPage() {
                                 ]}
                                 popular={true}
                                 isDark={isDark}
+                                onSelect={() => handlePlanSelection('Pro')}
                             />
                             <PricingCard
                                 title="Team"
@@ -607,6 +850,7 @@ export function LandingPage() {
                                     "Analytics & insights"
                                 ]}
                                 isDark={isDark}
+                                onSelect={() => handlePlanSelection('Team')}
                             />
                         </div>
                         
@@ -621,7 +865,9 @@ export function LandingPage() {
                                     ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white' 
                                     : 'border-zinc-300 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900'
                                 } backdrop-blur-xl font-medium hover:scale-105 transition-all`}
+                                onClick={handleContactSales}
                             >
+                                <Mail className="w-4 h-4 mr-2" />
                                 Contact Sales
                             </Button>
                         </div>
@@ -773,18 +1019,34 @@ export function LandingPage() {
                                 Transforming the way you think, write, and collaborate with AI-powered note-taking that understands your mind.
                             </p>
                             <div className="flex items-center gap-4 mt-8">
-                                <a href="#" className={`p-3 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'} rounded-xl transition-all hover:scale-110`}>
+                                <button 
+                                    onClick={() => handleSocialClick('twitter')}
+                                    className={`p-3 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'} rounded-xl transition-all hover:scale-110`}
+                                    aria-label="Follow us on Twitter"
+                                >
                                     <Twitter className="w-5 h-5" />
-                                </a>
-                                <a href="#" className={`p-3 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'} rounded-xl transition-all hover:scale-110`}>
+                                </button>
+                                <button 
+                                    onClick={() => handleSocialClick('github')}
+                                    className={`p-3 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'} rounded-xl transition-all hover:scale-110`}
+                                    aria-label="View our GitHub"
+                                >
                                     <Github className="w-5 h-5" />
-                                </a>
-                                <a href="#" className={`p-3 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'} rounded-xl transition-all hover:scale-110`}>
+                                </button>
+                                <button 
+                                    onClick={() => handleSocialClick('linkedin')}
+                                    className={`p-3 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'} rounded-xl transition-all hover:scale-110`}
+                                    aria-label="Connect on LinkedIn"
+                                >
                                     <Linkedin className="w-5 h-5" />
-                                </a>
-                                <a href="#" className={`p-3 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'} rounded-xl transition-all hover:scale-110`}>
+                                </button>
+                                <button 
+                                    onClick={() => handleSocialClick('email')}
+                                    className={`p-3 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'} rounded-xl transition-all hover:scale-110`}
+                                    aria-label="Send us an email"
+                                >
                                     <Mail className="w-5 h-5" />
-                                </a>
+                                </button>
                             </div>
                         </div>
 
@@ -794,9 +1056,12 @@ export function LandingPage() {
                             <ul className="space-y-4">
                                 {['Features', 'Pricing', 'Updates', 'Beta Program', 'Roadmap'].map((item) => (
                                     <li key={item}>
-                                        <a href="#" className={`${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors hover:translate-x-1 transform inline-block`}>
+                                        <button 
+                                            onClick={() => handleFooterLink(item)}
+                                            className={`${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-all duration-200 hover:translate-x-1 transform inline-block cursor-pointer text-left`}
+                                        >
                                             {item}
-                                        </a>
+                                        </button>
                                     </li>
                                 ))}
                             </ul>
@@ -808,9 +1073,12 @@ export function LandingPage() {
                             <ul className="space-y-4">
                                 {['Documentation', 'API Reference', 'Blog', 'Community', 'Help Center'].map((item) => (
                                     <li key={item}>
-                                        <a href="#" className={`${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors hover:translate-x-1 transform inline-block`}>
+                                        <button 
+                                            onClick={() => handleFooterLink(item)}
+                                            className={`${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-all duration-200 hover:translate-x-1 transform inline-block cursor-pointer text-left`}
+                                        >
                                             {item}
-                                        </a>
+                                        </button>
                                     </li>
                                 ))}
                             </ul>
@@ -822,9 +1090,12 @@ export function LandingPage() {
                             <ul className="space-y-4">
                                 {['About', 'Careers', 'Press', 'Partners', 'Contact'].map((item) => (
                                     <li key={item}>
-                                        <a href="#" className={`${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors hover:translate-x-1 transform inline-block`}>
+                                        <button 
+                                            onClick={() => handleFooterLink(item)}
+                                            className={`${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-all duration-200 hover:translate-x-1 transform inline-block cursor-pointer text-left`}
+                                        >
                                             {item}
-                                        </a>
+                                        </button>
                                     </li>
                                 ))}
                             </ul>
@@ -842,19 +1113,16 @@ export function LandingPage() {
                     </div>
 
                     <div className={`flex flex-col md:flex-row items-center justify-between pt-12 mt-12 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-                        <div className="flex items-center gap-8 mb-6 md:mb-0">
-                            <a href="#" className={`text-sm ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors`}>
-                                Privacy Policy
-                            </a>
-                            <a href="#" className={`text-sm ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors`}>
-                                Terms of Service
-                            </a>
-                            <a href="#" className={`text-sm ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors`}>
-                                Cookie Policy
-                            </a>
-                            <a href="#" className={`text-sm ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors`}>
-                                GDPR
-                            </a>
+                        <div className="flex flex-wrap items-center gap-4 sm:gap-8 mb-6 md:mb-0 justify-center md:justify-start">
+                            {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'GDPR'].map((item) => (
+                                <button 
+                                    key={item}
+                                    onClick={() => handleFooterLink(item)}
+                                    className={`text-sm ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-zinc-900'} transition-colors cursor-pointer`}
+                                >
+                                    {item}
+                                </button>
+                            ))}
                         </div>
                         <div className={`text-sm ${isDark ? 'text-zinc-500' : 'text-zinc-500'} text-center md:text-right`}>
                             <p>&copy; {new Date().getFullYear()} Orbital Flow, Inc. All rights reserved.</p>

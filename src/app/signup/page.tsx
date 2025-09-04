@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { AuthService } from '@/services/authService';
+import { updateUserActivity } from '@/services/userService';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,18 +12,20 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { createUserDocument } from '@/services/userService';
+import { useAuth } from '@/hooks/use-auth';
 import { Eye, EyeOff, Lock, Mail, Loader2, AlertCircle, Sparkles, Sun, Moon, User } from 'lucide-react';
-
+import Image from 'next/image';
 
 // Custom Orbital Flow Logo Component
 const OrbitalLogo = ({ isDark }: { isDark: boolean }) => (
   <div className="flex items-center justify-center space-x-3 mb-6">
-    {/* Space for your Orbital Flow image - replace the div below with your image */}
-    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
-      {/* Replace this div with: <Image src="/your-orbital-flow-logo.png" alt="Orbital Flow" width={48} height={48} /> */}
-      <span className="text-white font-bold text-lg">OF</span>
-    </div>
+    <Image
+      src="/icons/orbital-flow-logo.png"
+      alt="Orbital Flow"
+      width={48}
+      height={48}
+      className="rounded-full"
+    />
     <span className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Orbital Flow</span>
   </div>
 );
@@ -42,6 +44,14 @@ export default function SignupPage() {
   
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
 
   // Theme detection and management
   useEffect(() => {
@@ -117,29 +127,34 @@ export default function SignupPage() {
     setErrors({});
     
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await createUserDocument(userCredential.user);
+      const userCredential = await AuthService.signUp({ name, email, password });
+      
       toast({
         title: 'Account Created!',
-        description: 'Welcome to Orbital Flow! Your account has been created successfully.',
+        description: 'Please check your email to verify your account and complete the setup.',
         variant: 'default',
       });
-      router.push('/');
+      
+      // Redirect to login page with a message
+      router.push('/login?signup=success');
     } catch (error: any) {
       let errorMessage = 'An error occurred during signup';
       
       switch (error.code) {
         case 'auth/email-already-in-use':
-          errorMessage = 'An account with this email already exists';
+          errorMessage = 'An account with this email already exists. Please sign in instead.';
           break;
         case 'auth/invalid-email':
           errorMessage = 'Invalid email address';
           break;
         case 'auth/weak-password':
-          errorMessage = 'Password is too weak';
+          errorMessage = 'Password is too weak. Please choose a stronger password.';
           break;
         case 'auth/operation-not-allowed':
           errorMessage = 'Email/password accounts are not enabled';
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = 'Network error. Please check your connection and try again.';
           break;
         default:
           errorMessage = error.message;
@@ -161,8 +176,9 @@ export default function SignupPage() {
     setErrors({});
     
     try {
-      const userCredential = await signInWithPopup(auth, googleProvider);
-      await createUserDocument(userCredential.user);
+      const userCredential = await AuthService.signInWithGoogle();
+      await updateUserActivity(userCredential.user.uid);
+      
       toast({
         title: 'Welcome!',
         description: 'You have successfully signed up with Google.',
@@ -175,7 +191,9 @@ export default function SignupPage() {
       if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = 'Sign-up was cancelled';
       } else if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Popup was blocked by browser';
+        errorMessage = 'Popup was blocked by your browser. Please allow popups and try again.';
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
+        errorMessage = 'An account already exists with a different sign-in method';
       }
       
       setErrors({ general: errorMessage });

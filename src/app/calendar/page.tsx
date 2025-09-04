@@ -37,13 +37,27 @@ export default function CalendarPage() {
         }
     }, [user]);
 
+    const isTask = (event: CalendarEvent): event is Task & { type: 'task' } => {
+        return event.type === 'task';
+    };
+    
+    const isDeadline = (event: CalendarEvent): event is Deadline & { type: 'deadline' } => {
+        return event.type === 'deadline';
+    };
+
     const getEventDate = (event: CalendarEvent): Date | null => {
-        if (event.type === 'task') {
-            // Firestore timestamps need to be converted to Date objects
+        if (isTask(event)) {
+            // For tasks, use dueDate if available, otherwise use createdAt
+            if (event.dueDate) {
+                return parseISO(event.dueDate);
+            }
             return event.createdAt?.toDate ? event.createdAt.toDate() : null;
         }
-        // Deadline dates are stored as ISO strings
-        return parseISO(event.date);
+        if (isDeadline(event)) {
+            // Deadline dates are stored as ISO strings
+            return parseISO(event.date);
+        }
+        return null;
     };
 
     const eventDays = events.map(getEventDate).filter((d): d is Date => d !== null);
@@ -105,14 +119,14 @@ export default function CalendarPage() {
                         ) : selectedDayEvents.length > 0 ? (
                             selectedDayEvents.map(event => (
                                 <div key={`${event.type}-${event.id}`} className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
-                                    {event.type === 'task' ? (
+                                    {isTask(event) ? (
                                         <CheckCircle2 className={`mt-1 h-5 w-5 ${event.completed ? 'text-green-500' : 'text-muted-foreground' }`} />
                                     ) : (
                                         <CalendarClock className="mt-1 h-5 w-5 text-accent" />
                                     )}
                                     <div className="flex-grow">
                                         <p className="font-semibold">{event.title}</p>
-                                        {event.type === 'task' && (
+                                        {isTask(event) && (
                                             <Badge variant={getPriorityVariant(event.priority)}>{event.priority}</Badge>
                                         )}
                                     </div>

@@ -8,6 +8,7 @@ export interface Task {
     priority: 'High' | 'Medium' | 'Low';
     completed: boolean;
     userId: string;
+    dueDate?: string;
     createdAt: Timestamp;
     completedAt?: Timestamp;
 }
@@ -61,3 +62,6 @@ export const deleteTask = async (taskId: string) => {
         console.error("Error deleting task: ", error);
     }
 };
+
+// Alias for backward compatibility
+export const createTask = addTask;

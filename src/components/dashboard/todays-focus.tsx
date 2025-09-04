@@ -4,39 +4,46 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '../ui/button';
-import { MoreHorizontal } from 'lucide-react';
-import { useEffect, useState, useCallback } from 'react';
-import { Task, getTasks, updateTask } from '@/services/taskService';
+import { MoreHorizontal, Plus, Focus, CheckCircle2, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { Task } from '@/services/taskService';
 import { useAuth } from '@/hooks/use-auth';
+import { useTodaysFocus, useUpdateTask } from '@/hooks/use-task-queries';
 import { Skeleton } from '../ui/skeleton';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [completingTask, setCompletingTask] = useState<string | null>(null);
   const { user } = useAuth();
-
-  useEffect(() => {
-    const fetchTasks = async () => {
-      if (user) {
-        setLoading(true);
-        const userTasks = await getTasks(user.uid);
-        const sortedTasks = userTasks
-          .filter(t => !t.completed)
-          .sort((a, b) => {
-            const priorityOrder = { High: 0, Medium: 1, Low: 2 };
-            return priorityOrder[a.priority] - priorityOrder[b.priority];
-          });
-        setTasks(sortedTasks.slice(0, 3));
-        setLoading(false);
-      }
-    };
-    fetchTasks();
-  }, [user, onTaskUpdate]); // Re-run effect when onTaskUpdate changes (i.e. parent triggers refresh)
+  const { toast } = useToast();
+  
+  // Use optimized query hook for today's focus tasks
+  const { tasks, isLoading: loading } = useTodaysFocus();
+  const updateTaskMutation = useUpdateTask();
 
   const handleTaskCompletion = async (taskId: string, completed: boolean) => {
-    await updateTask(taskId, { completed });
-    onTaskUpdate(); // This will trigger a re-fetch in the parent component (dashboard)
+    setCompletingTask(taskId);
+    
+    updateTaskMutation.mutate(
+      { taskId, updates: { completed, completedAt: completed ? new Date() : null } },
+      {
+        onSuccess: () => {
+          if (completed) {
+            toast({
+              title: 'Task Completed! 🎉',
+              description: 'Great job! Keep up the momentum.',
+              variant: 'default',
+            });
+          }
+          onTaskUpdate(); // This will trigger a re-fetch in the parent component (dashboard)
+        },
+        onSettled: () => {
+          setCompletingTask(null);
+        }
+      }
+    );
   };
 
 
@@ -52,43 +59,107 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
   };
 
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
-      <CardHeader className='flex flex-row items-center justify-between'>
-        <CardTitle className="font-headline text-2xl">Today's Focus</CardTitle>
-        <Link href="/tasks">
-            <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
-        </Link>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <Card className="shadow-sm hover:shadow-md transition-all duration-200 border-l-4 border-l-orange-500">
+        <CardHeader className='flex flex-row items-center justify-between pb-3'>
+          <div className="flex items-center gap-2">
+            <Focus className="h-5 w-5 text-orange-500" />
+            <CardTitle className="font-headline text-xl md:text-2xl">Today's Focus</CardTitle>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/tasks">
+              <Button variant="outline" size="sm" className="h-8">
+                <Plus className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Add Task</span>
+              </Button>
+            </Link>
+            <Link href="/tasks">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent>
           {loading ? (
-            <>
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-            </>
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <Skeleton className="h-5 w-5 rounded" />
+                  <Skeleton className="h-4 flex-1" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+              ))}
+            </div>
           ) : tasks.length === 0 ? (
-            <p className="text-muted-foreground">No tasks for today. Add one to get started!</p>
-          ) : (
-            tasks.map((task) => (
-              <div key={task.id} className="flex items-center p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors">
-                <Checkbox
-                  id={`focus-${task.id}`}
-                  checked={task.completed}
-                  onCheckedChange={(checked) => handleTaskCompletion(task.id, !!checked)}
-                  className="h-5 w-5"
-                />
-                <label htmlFor={`focus-${task.id}`} className={`ml-3 flex-1 text-sm ${task.completed ? 'line-through text-muted-foreground' : 'text-card-foreground'}`}>
-                  {task.title}
-                </label>
-                <Badge variant={getPriorityVariant(task.priority)} className="ml-auto">
-                  {task.priority}
-                </Badge>
+            <div className="text-center py-8">
+              <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-3">
+                <Focus className="h-6 w-6 text-muted-foreground" />
               </div>
-            ))
+              <p className="text-muted-foreground mb-3">No tasks for today</p>
+              <Link href="/tasks">
+                <Button size="sm" variant="outline">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add your first task
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <AnimatePresence>
+              <div className="space-y-3">
+                {tasks.map((task, index) => (
+                  <motion.div
+                    key={task.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.2, delay: index * 0.1 }}
+                    className={`flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-muted/50 group ${
+                      completingTask === task.id ? 'opacity-50' : ''
+                    }`}
+                  >
+                    <Checkbox
+                      id={`focus-${task.id}`}
+                      checked={task.completed}
+                      onCheckedChange={(checked) => handleTaskCompletion(task.id, !!checked)}
+                      className="h-5 w-5 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                      disabled={completingTask === task.id}
+                    />
+                    <label 
+                      htmlFor={`focus-${task.id}`} 
+                      className={`ml-3 flex-1 text-sm font-medium cursor-pointer transition-all duration-200 ${
+                        task.completed 
+                          ? 'line-through text-muted-foreground' 
+                          : 'text-card-foreground group-hover:text-foreground'
+                      }`}
+                    >
+                      {task.title}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      {task.dueDate && (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          {new Date(task.dueDate).toLocaleDateString()}
+                        </div>
+                      )}
+                      <Badge 
+                        variant={getPriorityVariant(task.priority)} 
+                        className="text-xs"
+                      >
+                        {task.priority}
+                      </Badge>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </AnimatePresence>
           )}
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

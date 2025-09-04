@@ -2,9 +2,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { AuthService } from '@/services/authService';
+import { updateUserActivity } from '@/services/userService';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,8 +12,15 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { createUserDocument } from '@/services/userService';
-import { Eye, EyeOff, Lock, Mail, Loader2, AlertCircle, CheckCircle2, Sparkles, Sun, Moon } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { Eye, EyeOff, Lock, Mail, Loader2, AlertCircle, CheckCircle2, Sparkles, Sun, Moon, Send } from 'lucide-react';
+import { Suspense } from 'react';
+
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { toast } = useToast();
+  const { user } = useAuth();
 
 // Custom Orbital Flow Logo
 const OrbitalLogo = ({ isDark }: { isDark: boolean }) => (
@@ -58,7 +65,6 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -66,10 +72,35 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [errors, setErrors] = useState<{email?: string; password?: string; general?: string}>({});
   
-  const router = useRouter();
-  const { toast } = useToast();
+  // Check URL parameters for verification status
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+      return;
+    }
+    
+    const verified = searchParams.get('verified');
+    const reset = searchParams.get('reset');
+    
+    if (verified === 'true') {
+      toast({
+        title: 'Email Verified!',
+        description: 'Your email has been verified successfully. You can now sign in.',
+        variant: 'default',
+      });
+    }
+    
+    if (reset === 'true') {
+      toast({
+        title: 'Password Reset',
+        description: 'You can now enter your new password to sign in.',
+        variant: 'default',
+      });
+    }
+  }, [searchParams, router, toast, user]);
 
   // Theme detection and management
   useEffect(() => {
@@ -133,12 +164,27 @@ export default function LoginPage() {
     setErrors({});
     
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast({
-        title: 'Welcome back!',
-        description: 'You have successfully logged in.',
-        variant: 'default',
-      });
+      const userCredential = await AuthService.signIn({ email, password });
+      
+      // Check if email is verified
+      if (!userCredential.user.emailVerified) {
+        setShowEmailVerification(true);
+        toast({
+          title: 'Email Verification Required',
+          description: 'Please verify your email address to access all features.',
+          variant: 'default',
+        });
+      } else {
+        // Update user activity
+        await updateUserActivity(userCredential.user.uid);
+        
+        toast({
+          title: 'Welcome back!',
+          description: 'You have successfully logged in.',
+          variant: 'default',
+        });
+      }
+      
       router.push('/');
     } catch (error: any) {
       let errorMessage = 'An error occurred during login';
@@ -148,7 +194,8 @@ export default function LoginPage() {
           errorMessage = 'No account found with this email address';
           break;
         case 'auth/wrong-password':
-          errorMessage = 'Incorrect password';
+        case 'auth/invalid-credential':
+          errorMessage = 'Incorrect email or password';
           break;
         case 'auth/invalid-email':
           errorMessage = 'Invalid email address';
@@ -179,8 +226,9 @@ export default function LoginPage() {
     setErrors({});
     
     try {
-      const userCredential = await signInWithPopup(auth, googleProvider);
-      await createUserDocument(userCredential.user);
+      const userCredential = await AuthService.signInWithGoogle();
+      await updateUserActivity(userCredential.user.uid);
+      
       toast({
         title: 'Welcome!',
         description: 'You have successfully signed in with Google.',
@@ -193,7 +241,9 @@ export default function LoginPage() {
       if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = 'Sign-in was cancelled';
       } else if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Popup was blocked by browser';
+        errorMessage = 'Popup was blocked by your browser. Please allow popups and try again.';
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
+        errorMessage = 'An account already exists with a different sign-in method';
       }
       
       setErrors({ general: errorMessage });
@@ -219,7 +269,7 @@ export default function LoginPage() {
     }
     
     try {
-      await sendPasswordResetEmail(auth, email);
+      await AuthService.sendPasswordReset(email);
       setResetEmailSent(true);
       toast({
         title: 'Reset Email Sent',
@@ -227,13 +277,41 @@ export default function LoginPage() {
         variant: 'default',
       });
     } catch (error: any) {
+      let errorMessage = 'Failed to send reset email';
+      
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'No account found with this email address';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many requests. Please try again later';
+      }
+      
       toast({
         title: 'Reset Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!user) return;
+    
+    try {
+      await AuthService.resendEmailVerification(user);
+      toast({
+        title: 'Verification Email Sent',
+        description: 'Please check your email and click the verification link.',
+        variant: 'default',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Failed to Send Email',
         description: error.message,
         variant: 'destructive',
       });
     }
   };
+
 
   return (
     <div className={`min-h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-300 ${
@@ -273,8 +351,8 @@ export default function LoginPage() {
       <div className="flex flex-row items-center justify-center gap-3 mb-6">
       <img
        src="/icons/orbital-flow-logo.png"
-       alt="App Logo"
-        className="h-10 w-auto"
+       alt="Orbital Flow Logo"
+       className="h-10 w-auto rounded-full"
         />
         <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
          Orbital Flow
@@ -324,6 +402,30 @@ export default function LoginPage() {
                 <CheckCircle2 className={`h-4 w-4 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`} />
                 <AlertDescription className={isDarkMode ? 'text-green-200' : 'text-green-700'}>
                   Password reset email has been sent to your email address.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Email Verification Alert */}
+            {showEmailVerification && user && !user.emailVerified && (
+              <Alert className={`mb-6 ${
+                isDarkMode 
+                  ? 'bg-blue-900/50 border-blue-500/50' 
+                  : 'bg-blue-50 border-blue-200'
+              }`}>
+                <Mail className={`h-4 w-4 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                <AlertDescription className={`${isDarkMode ? 'text-blue-200' : 'text-blue-700'} flex items-center justify-between`}>
+                  <span>Please verify your email address to access all features.</span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResendVerification}
+                    className={`ml-2 h-7 ${isDarkMode ? 'text-blue-400 border-blue-500' : 'text-blue-600 border-blue-300'}`}
+                  >
+                    <Send className="h-3 w-3 mr-1" />
+                    Resend
+                  </Button>
                 </AlertDescription>
               </Alert>
             )}
@@ -548,5 +650,17 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

@@ -19,22 +19,39 @@ function Dashboard() {
   }, []);
 
   return (
-      <div className="space-y-6" key={refreshKey}>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-6 space-y-8" key={refreshKey}>
+        {/* Welcome Header */}
         <WelcomeHeader />
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
-            <TodaysFocus onTaskUpdate={refreshData} />
-            <HabitTracker />
+        
+        {/* Main Dashboard Grid */}
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+          {/* Left Column - Tasks and Habits */}
+          <div className="xl:col-span-8 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <TodaysFocus onTaskUpdate={refreshData} />
+              <HabitTracker />
+            </div>
+            
+            {/* AI Assistant - Full width on larger screens */}
+            <div className="lg:block hidden">
+              <AiAssistant />
+            </div>
           </div>
-          <div className="lg:col-span-1 space-y-6">
+          
+          {/* Right Sidebar - Analytics and Deadlines */}
+          <div className="xl:col-span-4 space-y-6">
             <ProductivityChart />
             <UpcomingDeadlines />
           </div>
         </div>
-        <div className="grid grid-cols-1">
+        
+        {/* AI Assistant - Mobile/Tablet View */}
+        <div className="lg:hidden">
           <AiAssistant />
         </div>
       </div>
+    </div>
   );
 }
 

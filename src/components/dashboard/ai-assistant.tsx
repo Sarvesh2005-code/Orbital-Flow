@@ -68,15 +68,31 @@ export function AiAssistant() {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error('AI Assistant error:', error);
-      const errorMessage: Message = { 
-        role: 'assistant', 
-        content: 'Sorry, I encountered an error while processing your request. Please try again or rephrase your question.' 
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      
+      // Provide helpful fallback responses based on query keywords
+      let fallbackResponse = "I'm currently experiencing connectivity issues, but here are some general productivity tips:\n\n";
+      
+      const queryLower = query.toLowerCase();
+      if (queryLower.includes('task') || queryLower.includes('todo')) {
+        fallbackResponse += "📋 **Task Management Tips:**\n• Prioritize tasks using the Eisenhower Matrix (urgent vs important)\n• Break large tasks into smaller, manageable chunks\n• Set specific deadlines and stick to them\n• Review your task list daily";
+      } else if (queryLower.includes('goal') || queryLower.includes('objective')) {
+        fallbackResponse += "🎯 **Goal Setting Advice:**\n• Set SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound)\n• Break long-term goals into smaller milestones\n• Track your progress regularly\n• Celebrate small wins along the way";
+      } else if (queryLower.includes('habit') || queryLower.includes('routine')) {
+        fallbackResponse += "🔄 **Habit Building Tips:**\n• Start small and be consistent\n• Stack new habits onto existing ones\n• Track your streak to stay motivated\n• Don't break the chain - aim for daily progress";
+      } else if (queryLower.includes('focus') || queryLower.includes('productivity')) {
+        fallbackResponse += "⚡ **Focus & Productivity Tips:**\n• Use the Pomodoro Technique (25min work, 5min break)\n• Eliminate distractions during work sessions\n• Tackle your most important task first thing\n• Schedule breaks to maintain energy";
+      } else {
+        fallbackResponse += "✨ **General Productivity Advice:**\n• Plan your day the night before\n• Focus on progress, not perfection\n• Use tools like Orbital Flow to track everything\n• Review and adjust your systems regularly\n\n💡 Try asking more specific questions about tasks, goals, habits, or focus when I'm back online!";
+      }
+      
+      const assistantMessage: Message = { role: 'assistant', content: fallbackResponse };
+      setMessages((prev) => [...prev, assistantMessage]);
+      
+      // Show a less alarming toast
       toast({
-        title: 'AI Error',
-        description: 'The AI assistant encountered an error. Please try again.',
-        variant: 'destructive',
+        title: 'AI Assistant Offline',
+        description: 'Showing general advice while reconnecting...',
+        variant: 'default',
       });
     } finally {
       setIsLoading(false);

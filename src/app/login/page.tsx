@@ -166,48 +166,58 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     try {
       const userCredential = await AuthService.signIn({ email, password });
       
+      // Update user activity first
+      await updateUserActivity(userCredential.user.uid);
+      
       // Check if email is verified
       if (!userCredential.user.emailVerified) {
         setShowEmailVerification(true);
         toast({
           title: 'Email Verification Required',
-          description: 'Please verify your email address to access all features.',
+          description: 'Please verify your email to access all features.',
           variant: 'default',
         });
       } else {
-        // Update user activity
-        await updateUserActivity(userCredential.user.uid);
-        
         toast({
-          title: 'Welcome back!',
-          description: 'You have successfully logged in.',
-          variant: 'default',
+          title: 'Welcome back! 🎉',
+          description: 'Successfully logged in to Orbital Flow.',
         });
       }
       
-      router.push('/');
-    } catch (error: any) {
-      let errorMessage = 'An error occurred during login';
+      // Redirect after successful login
+      setTimeout(() => {
+        router.push('/');
+      }, 500);
       
-      switch (error.code) {
-        case 'auth/user-not-found':
-          errorMessage = 'No account found with this email address';
-          break;
-        case 'auth/wrong-password':
-        case 'auth/invalid-credential':
-          errorMessage = 'Incorrect email or password';
-          break;
-        case 'auth/invalid-email':
-          errorMessage = 'Invalid email address';
-          break;
-        case 'auth/user-disabled':
-          errorMessage = 'This account has been disabled';
-          break;
-        case 'auth/too-many-requests':
-          errorMessage = 'Too many failed attempts. Please try again later';
-          break;
-        default:
-          errorMessage = error.message;
+    } catch (error: any) {
+      console.error('Login error:', error);
+      
+      let errorMessage = 'Login failed. Please try again.';
+      
+      // Handle specific Firebase auth errors
+      if (error?.code) {
+        switch (error.code) {
+          case 'auth/user-not-found':
+          case 'auth/wrong-password':
+          case 'auth/invalid-credential':
+          case 'auth/invalid-login-credentials':
+            errorMessage = 'Invalid email or password';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'Please enter a valid email address';
+            break;
+          case 'auth/user-disabled':
+            errorMessage = 'This account has been disabled';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage = 'Too many failed attempts. Please try again in a few minutes';
+            break;
+          case 'auth/network-request-failed':
+            errorMessage = 'Network error. Please check your connection';
+            break;
+          default:
+            errorMessage = error.message || 'An unexpected error occurred';
+        }
       }
       
       setErrors({ general: errorMessage });

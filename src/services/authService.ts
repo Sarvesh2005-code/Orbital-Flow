@@ -38,10 +38,14 @@ export class AuthService {
     });
 
     // Send email verification
-    await sendEmailVerification(userCredential.user, {
-      url: `${window.location.origin}/login?verified=true`,
+    const actionCodeSettings = {
+      url: process.env.NEXT_PUBLIC_APP_URL 
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/login?verified=true`
+        : `${window.location.origin}/login?verified=true`,
       handleCodeInApp: false,
-    });
+    };
+    
+    await sendEmailVerification(userCredential.user, actionCodeSettings);
 
     // Create user document in Firestore
     await createUserDocument(userCredential.user, { name });
@@ -71,7 +75,9 @@ export class AuthService {
   // Password Reset
   static async sendPasswordReset(email: string): Promise<void> {
     const actionCodeSettings = {
-      url: `${window.location.origin}/login?reset=true`,
+      url: process.env.NEXT_PUBLIC_APP_URL 
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/login?reset=true`
+        : `${window.location.origin}/login?reset=true`,
       handleCodeInApp: false,
     };
 
@@ -80,10 +86,14 @@ export class AuthService {
 
   // Email Verification
   static async resendEmailVerification(user: User): Promise<void> {
-    await sendEmailVerification(user, {
-      url: `${window.location.origin}/login?verified=true`,
+    const actionCodeSettings = {
+      url: process.env.NEXT_PUBLIC_APP_URL 
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/login?verified=true`
+        : `${window.location.origin}/login?verified=true`,
       handleCodeInApp: false,
-    });
+    };
+    
+    await sendEmailVerification(user, actionCodeSettings);
   }
 
   // Profile Updates

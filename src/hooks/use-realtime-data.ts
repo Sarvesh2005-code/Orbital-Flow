@@ -12,7 +12,7 @@ export function useRealtimeTasks(filters?: { completed?: boolean; limit?: number
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.uid) {
       setTasks([]);
       setLoading(false);
       return;
@@ -24,16 +24,23 @@ export function useRealtimeTasks(filters?: { completed?: boolean; limit?: number
     const unsubscribe = RealtimeService.subscribeToTasks(
       user.uid,
       (data) => {
+        console.log('Tasks updated:', data.length);
         setTasks(data);
         setLoading(false);
       },
       filters
     );
 
+    // Set a timeout to ensure loading doesn't stay true forever
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+
     return () => {
       unsubscribe();
+      clearTimeout(loadingTimeout);
     };
-  }, [user, filters?.completed, filters?.limit]);
+  }, [user?.uid, filters?.completed, filters?.limit]);
 
   return { tasks, loading, error, setTasks };
 }
@@ -45,7 +52,7 @@ export function useRealtimeHabits() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.uid) {
       setHabits([]);
       setLoading(false);
       return;
@@ -57,15 +64,21 @@ export function useRealtimeHabits() {
     const unsubscribe = RealtimeService.subscribeToHabits(
       user.uid,
       (data) => {
+        console.log('Habits updated:', data.length);
         setHabits(data);
         setLoading(false);
       }
     );
 
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
     return () => {
       unsubscribe();
+      clearTimeout(loadingTimeout);
     };
-  }, [user]);
+  }, [user?.uid]);
 
   return { habits, loading, error, setHabits };
 }

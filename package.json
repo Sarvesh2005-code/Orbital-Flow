@@ -9,7 +9,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "node scripts/deploy.js",
+    "clean": "rm -rf .next out node_modules/.cache",
+    "analyze": "ANALYZE=true npm run build",
+    "check": "npm run typecheck && npm run lint"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",

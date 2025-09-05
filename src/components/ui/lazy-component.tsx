@@ -33,9 +33,12 @@ export function LazyComponent({
   });
 
   const defaultFallback = (
-    <div className={`space-y-3 ${className}`}>
+    <div className={`space-y-2 ${className}`}>
       {Array.from({ length: skeletonRows }).map((_, i) => (
-        <Skeleton key={i} className={`w-full ${skeletonHeight}`} />
+        <div key={i} className="animate-pulse">
+          <div className={`bg-muted rounded-md ${skeletonHeight} w-full`} 
+               style={{ animationDelay: `${i * 0.1}s` }} />
+        </div>
       ))}
     </div>
   );

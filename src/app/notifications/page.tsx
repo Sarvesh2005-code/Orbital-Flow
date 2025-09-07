@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Bell, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useEffect } from 'react';
+import { NotificationService } from '@/services/notificationService';
 
 const placeholderNotifications = [
     { id: 1, type: 'task', message: 'Your task "Design the new landing page" is due tomorrow.', time: '2 hours ago' },
@@ -14,6 +16,14 @@ const placeholderNotifications = [
 ];
 
 export default function NotificationsPage() {
+    useEffect(() => {
+        const unsub = NotificationService.onMessage((payload) => {
+            console.log('Foreground notification:', payload);
+        });
+        return () => {
+            if (typeof unsub === 'function') unsub();
+        };
+    }, []);
     return (
         <div className="max-w-3xl mx-auto">
             <Card>

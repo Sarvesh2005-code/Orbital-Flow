@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCallback, useState } from 'react';
 import { LandingPage } from '@/components/layout/landing-page';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -20,6 +21,10 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <div className="flex items-center gap-3 px-4 pt-4">
+        <Image src="/icons/orbital-flow-logo.png" alt="Orbital Flow" width={28} height={28} className="rounded-md" />
+        <span className="text-sm text-muted-foreground">Orbital Flow</span>
+      </div>
       <div className="container mx-auto px-4 py-6 space-y-8" key={refreshKey}>
         {/* Welcome Header */}
         <WelcomeHeader />

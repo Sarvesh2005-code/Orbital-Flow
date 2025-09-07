@@ -9,6 +9,7 @@ import { AddTaskDialog } from '../add-task-dialog';
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 function getPageTitle(pathname: string) {
   if (pathname === '/') return 'Dashboard';
@@ -35,7 +36,8 @@ export function AppHeader() {
         <SidebarTrigger />
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden md:flex items-center gap-3">
+        <Image src="/icons/orbital-flow-logo.png" alt="Orbital Flow" width={24} height={24} className="rounded" />
         <h1 className="font-headline text-2xl font-semibold tracking-tight text-foreground">
           {title}
         </h1>

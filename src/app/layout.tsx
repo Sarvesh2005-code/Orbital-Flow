@@ -44,7 +44,7 @@ const AppMetadata = () => {
     ensureMeta('name', 'robots', 'index, follow');
 
     // Open Graph
-    ensureMeta('property', 'og:title', 'Orbital Flow — AI Productivity, Notes, Tasks');
+    ensureMeta('property', 'og:title', 'Orbital Flow');
     ensureMeta('property', 'og:description', 'AI productivity hub for notes, tasks, habits, goals, and email.');
     ensureMeta('property', 'og:type', 'website');
     ensureMeta('property', 'og:url', 'https://orbital-flow.vercel.app/');
@@ -125,12 +125,19 @@ export default function RootLayout({
         {/* Google Analytics if provided */}
         {process.env.NEXT_PUBLIC_GA_ID ? (
           <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} strategy="afterInteractive" />
+            <Script 
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} 
+              strategy="afterInteractive" 
+            />
             <Script id="ga-setup" strategy="afterInteractive">{`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);} 
               gtag('js', new Date());
-              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                page_title: document.title,
+                page_location: window.location.href,
+                send_page_view: true
+              });
             `}</Script>
           </>
         ) : null}

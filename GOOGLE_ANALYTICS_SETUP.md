@@ -12,9 +12,14 @@
 ### Option A: Local Development (.env.local)
 Create a file called `.env.local` in your project root with:
 ```
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_GA_ID=G-LXYV05YJP8
 ```
-Replace `G-XXXXXXXXXX` with your actual Measurement ID.
+
+### Your Google Analytics Details:
+- **Measurement ID**: `G-LXYV05YJP8`
+- **Stream ID**: `12127023355`
+- **Stream Name**: `Orbital-Flow`
+- **Stream URL**: `https://orbital-flow.vercel.app`
 
 ### Option B: Vercel Deployment
 1. Go to your Vercel dashboard
@@ -22,7 +27,7 @@ Replace `G-XXXXXXXXXX` with your actual Measurement ID.
 3. Go to **Settings** → **Environment Variables**
 4. Add a new variable:
    - **Name**: `NEXT_PUBLIC_GA_ID`
-   - **Value**: `G-XXXXXXXXXX` (your actual ID)
+   - **Value**: `G-LXYV05YJP8`
    - **Environment**: Production, Preview, Development
 
 ## Step 3: Test Your Setup

@@ -32,7 +32,7 @@ import {
   Activity,
   Palette
 } from 'lucide-react';
-import { OrbitalFlowLogo } from '@/components/icons/orbital-flow-logo';
+import Image from 'next/image';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -49,7 +49,14 @@ const OrbitalLogo = ({ isCollapsed }: { isCollapsed?: boolean }) => (
     transition={{ duration: 0.2 }}
   >
     <div className="relative">
-      <OrbitalFlowLogo size={32} className="drop-shadow-lg" />
+      <Image
+        src="/icons/orbital-flow-logo.png"
+        alt="Orbital Flow"
+        width={32}
+        height={32}
+        className="rounded-md drop-shadow-lg"
+        priority
+      />
       <div className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-green-500 rounded-full animate-pulse" />
     </div>
     {!isCollapsed && (

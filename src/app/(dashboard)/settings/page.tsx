@@ -24,7 +24,8 @@ import {
   Mail,
   Smartphone,
   Save,
-  AlertTriangle
+  AlertTriangle,
+  CreditCard
 } from 'lucide-react';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 import { useAuth } from '@/hooks/use-auth';
@@ -43,6 +44,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isBillingLoading, setIsBillingLoading] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
@@ -176,6 +178,27 @@ export default function SettingsPage() {
     }
   };
 
+  const handleManageBilling = async () => {
+    if (!user) return;
+    setIsBillingLoading(true);
+    try {
+      const res = await fetch('/api/stripe/portal', {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast({ title: 'Error', description: 'Failed to open billing portal', variant: 'destructive' });
+      }
+    } catch (e) {
+      toast({ title: 'Error', description: 'Failed to access billing', variant: 'destructive' });
+    } finally {
+      setIsBillingLoading(false);
+    }
+  };
+
+
   const handleSignOut = async () => {
     try {
       await AuthService.signOut();
@@ -206,10 +229,11 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5 overflow-x-auto h-auto py-2">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
+          <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
 
@@ -418,6 +442,43 @@ export default function SettingsPage() {
                   checked={isDarkMode} 
                   onCheckedChange={toggleDarkMode} 
                 />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Billing Tab */}
+        <TabsContent value="billing" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Subscription & Billing
+              </CardTitle>
+              <CardDescription>
+                Manage your subscription, payment methods, and billing history.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between p-4 border rounded-lg bg-muted/50">
+                <div className="mb-4 sm:mb-0 space-y-1 text-center sm:text-left">
+                  <p className="font-medium">Current Plan: {profile?.subscriptionStatus === 'active' ? 'Pro' : 'Starter'}</p>
+                  <p className="text-sm text-muted-foreground">Manage your payment methods and view history.</p>
+                </div>
+                <Button onClick={handleManageBilling} disabled={isBillingLoading}>
+                  {isBillingLoading ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+                      />
+                      Loading...
+                    </>
+                  ) : (
+                    'Manage Billing'
+                  )}
+                </Button>
               </div>
             </CardContent>
           </Card>

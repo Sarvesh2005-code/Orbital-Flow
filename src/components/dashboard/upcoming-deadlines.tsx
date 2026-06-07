@@ -51,7 +51,7 @@ export function UpcomingDeadlines() {
   };
 
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
+    <Card className="glass-card transition-all hover:translate-y-[-2px]">
       <CardHeader className='flex flex-row items-center justify-between'>
         <CardTitle className="font-headline text-2xl">Upcoming</CardTitle>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -80,24 +80,24 @@ export function UpcomingDeadlines() {
       </CardHeader>
       <CardContent>
         {loading ? (<p>Loading...</p>) : deadlines.length === 0 ? (<p className="text-muted-foreground text-center py-4">No upcoming deadlines.</p>) : (
-            <ul className="space-y-4">
+          <ul className="space-y-4">
             {deadlines.map((deadline) => (
-                <li key={deadline.id} className="flex items-start gap-4 group">
+              <li key={deadline.id} className="flex items-start gap-4 group">
                 <div className="flex-shrink-0 mt-1">
-                    <CalendarClock className="h-5 w-5 text-accent" />
+                  <CalendarClock className="h-5 w-5 text-accent" />
                 </div>
                 <div className='flex-grow'>
-                    <p className="font-medium text-card-foreground">{deadline.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                        Due {formatDistanceToNow(parseISO(deadline.date), { addSuffix: true })}
-                    </p>
+                  <p className="font-medium text-card-foreground">{deadline.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Due {formatDistanceToNow(parseISO(deadline.date), { addSuffix: true })}
+                  </p>
                 </div>
                 <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100" onClick={() => handleDeleteDeadline(deadline.id)}>
-                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive"/>
+                  <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                 </Button>
-                </li>
+              </li>
             ))}
-            </ul>
+          </ul>
         )}
       </CardContent>
     </Card>

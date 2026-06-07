@@ -204,7 +204,7 @@ export default function HabitsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <AnimatePresence>
             {habits.map((habit, index) => {
-              const Icon = iconMap[habit.icon] || Dumbbell;
+              const Icon = iconMap[habit.icon as HabitIcon] || Dumbbell;
               const isCompleted = isHabitCompletedToday(habit);
               return (
                 <motion.div

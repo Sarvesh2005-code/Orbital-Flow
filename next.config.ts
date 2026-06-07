@@ -1,13 +1,13 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* Performance Optimizations */
-  
+
   // Enable experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
-  
+
   // Turbopack configuration (moved from experimental)
   turbopack: {
     rules: {
@@ -17,12 +17,12 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  
+
   // Compiler optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
+
   // Build optimizations
   typescript: {
     ignoreBuildErrors: true,
@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  
+
   // Image optimization
   images: {
     remotePatterns: [
@@ -56,8 +56,8 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
   },
-  
-  // Performance headers
+
+  // Performance & Security headers
   async headers() {
     return [
       {
@@ -83,6 +83,10 @@ const nextConfig: NextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
           },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://www.googletagmanager.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://lh3.googleusercontent.com https://firebasestorage.googleapis.com https://*.googleusercontent.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebasestorage.googleapis.com https://www.googleapis.com https://www.google-analytics.com https://g.doubleclick.net https://fcm.googleapis.com;"
+          }
         ],
       },
       {
@@ -96,7 +100,7 @@ const nextConfig: NextConfig = {
       }
     ];
   },
-  
+
   // Webpack optimizations
   webpack: (config, { isServer }) => {
     // Optimize bundle size
@@ -108,16 +112,16 @@ const nextConfig: NextConfig = {
         tls: false,
       };
     }
-    
+
     return config;
   },
-  
+
   // Enable compression
   compress: true,
-  
+
   // Optimize static generation
   trailingSlash: false,
-  
+
   // Power user features
   poweredByHeader: false,
 };

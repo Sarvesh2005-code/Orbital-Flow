@@ -14,18 +14,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
-export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
+export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void }) {
   const [completingTask, setCompletingTask] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
-  
+
   // Use optimized query hook for today's focus tasks
   const { tasks, isLoading: loading } = useTodaysFocus();
   const updateTaskMutation = useUpdateTask();
 
   const handleTaskCompletion = async (taskId: string, completed: boolean) => {
     setCompletingTask(taskId);
-    
+
     updateTaskMutation.mutate(
       { taskId, updates: { completed, completedAt: completed ? new Date() : null } },
       {
@@ -64,10 +64,10 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="shadow-sm hover:shadow-md transition-all duration-200 border-l-4 border-l-orange-500">
+      <Card className="glass-card border-l-4 border-l-brand-orange hover:shadow-xl hover:translate-y-[-2px] duration-300">
         <CardHeader className='flex flex-row items-center justify-between pb-3'>
           <div className="flex items-center gap-2">
-            <Focus className="h-5 w-5 text-orange-500" />
+            <Focus className="h-5 w-5 text-brand-orange" />
             <CardTitle className="font-headline text-xl md:text-2xl">Today's Focus</CardTitle>
           </div>
           <div className="flex items-center gap-2">
@@ -118,9 +118,8 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.2, delay: index * 0.1 }}
-                    className={`flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-muted/50 group ${
-                      completingTask === task.id ? 'opacity-50' : ''
-                    }`}
+                    className={`flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-muted/50 group ${completingTask === task.id ? 'opacity-50' : ''
+                      }`}
                   >
                     <Checkbox
                       id={`focus-${task.id}`}
@@ -129,13 +128,12 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
                       className="h-5 w-5 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                       disabled={completingTask === task.id}
                     />
-                    <label 
-                      htmlFor={`focus-${task.id}`} 
-                      className={`ml-3 flex-1 text-sm font-medium cursor-pointer transition-all duration-200 ${
-                        task.completed 
-                          ? 'line-through text-muted-foreground' 
-                          : 'text-card-foreground group-hover:text-foreground'
-                      }`}
+                    <label
+                      htmlFor={`focus-${task.id}`}
+                      className={`ml-3 flex-1 text-sm font-medium cursor-pointer transition-all duration-200 ${task.completed
+                        ? 'line-through text-muted-foreground'
+                        : 'text-card-foreground group-hover:text-foreground'
+                        }`}
                     >
                       {task.title}
                     </label>
@@ -146,8 +144,8 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void}) {
                           {new Date(task.dueDate).toLocaleDateString()}
                         </div>
                       )}
-                      <Badge 
-                        variant={getPriorityVariant(task.priority)} 
+                      <Badge
+                        variant={getPriorityVariant(task.priority)}
                         className="text-xs"
                       >
                         {task.priority}

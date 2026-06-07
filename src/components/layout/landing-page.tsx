@@ -12,224 +12,21 @@ import {
 import { useState, useEffect, memo, useMemo } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/use-auth';
 
-const OrbitalFlowLogo = ({ isDark }: { isDark: boolean }) => {
-    const [imageError, setImageError] = useState(false);
-
-    return (
-        <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8">
-                {!imageError ? (
-                    <Image
-                        src="/icons/orbital-flow-logo.png"
-                        alt="Orbital Flow Logo"
-                        width={32}
-                        height={32}
-                        className="rounded-lg"
-                        onError={() => setImageError(true)}
-                    />
-                ) : (
-                    <>
-                        {/* Fallback animated logo */}
-                        <div className="absolute inset-0 w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 via-pink-500 to-rose-500 animate-pulse"></div>
-                        <div
-                            className="absolute inset-0 w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 via-pink-500 to-rose-500 animate-spin opacity-50"
-                            style={{ animationDuration: '3s' }}
-                        ></div>
-                    </>
-                )}
-            </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 bg-clip-text text-transparent">
-                Orbital Flow
-            </h1>
-        </div>
-    );
-};
-
-const AnimatedCounter = memo(({ target, label, suffix = '+', isDark, delay = 0 }: { 
-    target: number; 
-    label: string; 
-    suffix?: string;
-    isDark: boolean;
-    delay?: number;
-}) => {
-    const [count, setCount] = useState(0);
-    const [hasStarted, setHasStarted] = useState(false);
-    
-    const countStyles = useMemo(() => ({
-        main: `text-3xl sm:text-4xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} mb-2 group-hover:scale-110 transition-all duration-300`,
-        label: `text-xs sm:text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-600'} uppercase tracking-wider`
-    }), [isDark]);
-    
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setHasStarted(true);
-            const duration = 2000; // Reduced duration for better performance
-            const steps = 60; // Reduced steps for smoother animation
-            const increment = target / steps;
-            const stepDuration = duration / steps;
-            
-            let current = 0;
-            const countTimer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    setCount(target);
-                    clearInterval(countTimer);
-                } else {
-                    setCount(Math.floor(current));
-                }
-            }, stepDuration);
-            
-            return () => clearInterval(countTimer);
-        }, delay);
-        
-        return () => clearTimeout(timer);
-    }, [target, delay]);
-    
-    return (
-        <motion.div 
-            className="text-center group"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: delay / 1000 }}
-        >
-            <div className={`${countStyles.main} ${hasStarted ? 'animate-pulse' : ''}`}>
-                {count.toLocaleString()}{suffix}
-            </div>
-            <div className={countStyles.label}>
-                {label}
-            </div>
-        </motion.div>
-    );
-});
-
-const FeatureCard = ({ icon, title, description, delay = 0, isDark }: { 
-    icon: React.ReactNode; 
-    title: string; 
-    description: string; 
-    delay?: number;
-    isDark: boolean;
-}) => (
-    <div 
-        className={`group p-8 ${isDark 
-            ? 'bg-zinc-900/40 hover:bg-zinc-800/60 border-zinc-800 hover:border-zinc-700' 
-            : 'bg-white/60 hover:bg-white/80 border-zinc-200 hover:border-zinc-300'
-        } backdrop-blur-xl rounded-3xl border transition-all duration-700 hover:scale-[1.02] hover:-translate-y-1 relative overflow-hidden`}
-        style={{ animationDelay: `${delay}ms` }}
-    >
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-600/5 to-pink-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div className="relative z-10">
-            <div className="flex items-start gap-4 mb-6">
-                <div className={`p-4 ${isDark 
-                    ? 'bg-gradient-to-br from-orange-500/20 to-pink-500/20 text-orange-400' 
-                    : 'bg-gradient-to-br from-orange-500/10 to-pink-500/10 text-orange-600'
-                } rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0`}>
-                    {icon}
-                </div>
-                <div className="flex-1">
-                    <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} mb-3`}>
-                        {title}
-                    </h3>
-                    <p className={`leading-relaxed ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
-                        {description}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-);
-
-const PricingCard = ({ title, price, period, features, popular = false, isDark, onSelect }: {
-    title: string;
-    price: string;
-    period: string;
-    features: string[];
-    popular?: boolean;
-    isDark: boolean;
-    onSelect: () => void;
-}) => {
-    const [isHovered, setIsHovered] = useState(false);
-    
-    return (
-        <div 
-            className={`relative p-6 sm:p-8 rounded-2xl sm:rounded-3xl border transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 ${
-                popular 
-                    ? 'bg-gradient-to-br from-orange-500/10 via-pink-500/10 to-rose-500/10 border-orange-500/30 shadow-xl shadow-orange-500/10'
-                    : isDark 
-                        ? 'bg-zinc-900/40 border-zinc-800 hover:border-zinc-700' 
-                        : 'bg-white/60 border-zinc-200 hover:border-zinc-300'
-            } backdrop-blur-xl cursor-pointer group`}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            {popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium animate-pulse">
-                        Most Popular
-                    </div>
-                </div>
-            )}
-            <div className="text-center mb-6 sm:mb-8">
-                <h3 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-pink-500 group-hover:bg-clip-text transition-all duration-300`}>
-                    {title}
-                </h3>
-                <div className="flex items-baseline justify-center gap-1">
-                    <span className={`text-4xl sm:text-5xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'} transition-all duration-300 ${isHovered ? 'scale-110' : ''}`}>
-                        {price}
-                    </span>
-                    <span className={`text-base sm:text-lg ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                        {period}
-                    </span>
-                </div>
-            </div>
-            <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                {features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-3 text-sm sm:text-base">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className={`${isDark ? 'text-zinc-300' : 'text-zinc-600'} leading-relaxed`}>
-                            {feature}
-                        </span>
-                    </li>
-                ))}
-            </ul>
-            <Button 
-                className={`w-full text-sm sm:text-base font-semibold transition-all duration-300 group-hover:scale-105 ${
-                    popular 
-                        ? 'bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl' 
-                        : isDark 
-                            ? 'bg-zinc-800 hover:bg-zinc-700 text-white hover:shadow-lg' 
-                            : 'bg-zinc-900 hover:bg-zinc-800 text-white hover:shadow-lg'
-                }`}
-                size="lg"
-                onClick={onSelect}
-            >
-                {title === 'Starter' ? 'Start Free' : 'Choose Plan'}
-            </Button>
-        </div>
-    );
-};
-
-const FloatingElement = ({ children, delay = 0, duration = 6 }: { 
-    children: React.ReactNode; 
-    delay?: number;
-    duration?: number;
-}) => (
-    <div 
-        className="animate-float"
-        style={{ 
-            animationDelay: `${delay}s`,
-            animationDuration: `${duration}s`
-        }}
-    >
-        {children}
-    </div>
-);
+import { OrbitalFlowLogo } from '@/components/landing/OrbitalFlowLogo';
+import { AnimatedCounter } from '@/components/landing/AnimatedCounter';
+import { FeatureCard } from '@/components/landing/FeatureCard';
+import { PricingCard } from '@/components/landing/PricingCard';
+import { FloatingElement } from '@/components/landing/FloatingElement';
 
 export function LandingPage() {
     const [isVisible, setIsVisible] = useState(false);
     const [isDark, setIsDark] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+    const [isLoadingPlan, setIsLoadingPlan] = useState(false);
+    const { user } = useAuth();
     
     useEffect(() => {
         setIsVisible(true);
@@ -282,14 +79,38 @@ export function LandingPage() {
         setMobileMenuOpen(false);
     };
 
-    const handlePlanSelection = (planName: string) => {
+    const handlePlanSelection = async (planName: string) => {
         if (planName === 'Starter') {
             // Redirect to signup for free plan
             window.location.href = '/signup';
         } else {
-            // For paid plans, you could integrate with Stripe or other payment processor
-            alert(`Selected ${planName} plan! This would redirect to payment processing.`);
-            // window.location.href = `/checkout?plan=${planName.toLowerCase()}`;
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+            try {
+                setIsLoadingPlan(true);
+                const response = await fetch('/api/stripe/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        priceId: 'price_12345', // In a real app this should be replaced with actual Stripe price ID
+                        userId: user.uid,
+                        email: user.email 
+                    }),
+                });
+                const data = await response.json();
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Failed to start checkout process.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Something went wrong.');
+            } finally {
+                setIsLoadingPlan(false);
+            }
         }
     };
 

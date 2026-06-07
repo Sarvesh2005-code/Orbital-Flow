@@ -59,16 +59,20 @@ const getHabitsTool = ai.defineTool(
       }),
       outputSchema: z.array(z.object({
         id: z.string(),
-        title: z.string(),
-        description: z.string().optional(),
+        name: z.string(),
         streak: z.number(),
-        completedToday: z.boolean(),
-        category: z.string().optional(),
+        lastCompleted: z.string().nullable(),
       })),
     },
     async (input) => {
       try {
-        return await getHabits(input.userId);
+        const habits = await getHabits(input.userId);
+        return habits.map(h => ({
+          id: h.id,
+          name: h.name,
+          streak: h.streak,
+          lastCompleted: h.lastCompleted,
+        }));
       } catch (error) {
         console.error('Error fetching habits:', error);
         return [];
@@ -89,16 +93,17 @@ const getNotesTool = ai.defineTool(
         content: z.string(),
         category: z.string().optional(),
         createdAt: z.string(),
-        updatedAt: z.string(),
       })),
     },
     async (input) => {
       try {
         const notes = await getNotes(input.userId);
-        return notes.map(note => ({
-          ...note,
+        return notes.map((note: any) => ({
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          category: note.category,
           createdAt: note.createdAt?.seconds ? new Date(note.createdAt.seconds * 1000).toISOString() : new Date().toISOString(),
-          updatedAt: note.updatedAt?.seconds ? new Date(note.updatedAt.seconds * 1000).toISOString() : new Date().toISOString(),
         }));
       } catch (error) {
         console.error('Error fetching notes:', error);
@@ -110,26 +115,27 @@ const getNotesTool = ai.defineTool(
 const getGoalsTool = ai.defineTool(
     {
       name: 'getGoals',
-      description: 'Returns a list of goals and their progress for the current user.',
+      description: 'Returns a list of goals and their status for the current user.',
       inputSchema: z.object({
         userId: z.string().describe('The ID of the user to fetch goals for.'),
       }),
       outputSchema: z.array(z.object({
         id: z.string(),
         title: z.string(),
-        description: z.string().optional(),
-        progress: z.number(),
-        target: z.number(),
-        deadline: z.string().optional(),
-        category: z.string().optional(),
+        description: z.string(),
+        status: z.string(),
+        targetDate: z.string(),
       })),
     },
     async (input) => {
       try {
         const goals = await getGoals(input.userId);
         return goals.map(goal => ({
-          ...goal,
-          deadline: goal.deadline ? new Date(goal.deadline).toISOString() : undefined,
+          id: goal.id,
+          title: goal.title,
+          description: goal.description,
+          status: goal.status,
+          targetDate: goal.targetDate,
         }));
       } catch (error) {
         console.error('Error fetching goals:', error);

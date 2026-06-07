@@ -12,6 +12,9 @@ export interface UserProfile {
   theme?: 'light' | 'dark' | 'system';
   emailNotifications?: boolean;
   pushNotifications?: boolean;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  subscriptionStatus?: 'active' | 'canceled' | 'past_due' | 'none';
   lastActive?: any; // FirebaseFirestore.Timestamp
   createdAt?: any; // FirebaseFirestore.Timestamp
   updatedAt?: any; // FirebaseFirestore.Timestamp

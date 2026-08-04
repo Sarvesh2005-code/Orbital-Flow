@@ -1,9 +1,8 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { BotMessageSquare, ArrowUp, User, Sparkles, Lightbulb, RefreshCw } from 'lucide-react';
+import { ArrowUp, User, Cat, Lightbulb, RefreshCw, Search } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useState, useRef, useEffect } from 'react';
@@ -29,7 +28,7 @@ export function AiAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: 'assistant', 
-      content: "👋 Hello! I'm your AI productivity assistant. I can help you prioritize tasks, summarize your progress, suggest improvements, and answer productivity-related questions. Try asking me something!" 
+      content: "Meow... what's your request?" 
     }
   ]);
   const [input, setInput] = useState('');
@@ -109,7 +108,7 @@ export function AiAssistant() {
     setMessages([
       { 
         role: 'assistant', 
-        content: "👋 Hello! I'm your AI productivity assistant. How can I help you today?" 
+        content: "Meow... what's your request?" 
       }
     ]);
     setShowSuggestions(true);
@@ -119,26 +118,16 @@ export function AiAssistant() {
   return (
     <div>
       <Card className="shadow-sm hover:shadow-md transition-all duration-200 border-l-4 border-l-purple-500">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Sparkles className="h-5 w-5 text-purple-500" />
-              </div>
-              <CardTitle className="font-headline text-xl md:text-2xl">AI Assistant</CardTitle>
-              <Badge variant="secondary" className="text-xs">Beta</Badge>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={clearConversation}
-              className="h-8"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
+        <div className="flex items-center justify-between p-4 pb-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+            <Cat className="h-4 w-4" />
+            <span>AI Assistant</span>
           </div>
-        </CardHeader>
-        <CardContent>
+          <Button variant="ghost" size="sm" onClick={clearConversation} className="h-8 w-8 p-0">
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
+        <CardContent className="pt-0">
           <div className="flex flex-col h-[400px] border rounded-lg bg-gradient-to-b from-background to-muted/20">
             <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
               <div className="space-y-4">
@@ -152,14 +141,14 @@ export function AiAssistant() {
                       {message.role === 'assistant' && (
                         <Avatar className="h-8 w-8 border bg-purple-100 dark:bg-purple-900">
                           <AvatarFallback className="bg-purple-500 text-white">
-                            <Sparkles className="h-4 w-4" />
+                            <Cat className="h-4 w-4" />
                           </AvatarFallback>
                         </Avatar>
                       )}
                       <div className={`p-3 rounded-lg max-w-[80%] ${
                         message.role === 'assistant'
-                          ? 'bg-muted/80 rounded-tl-none shadow-sm'
-                          : 'bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-tr-none shadow-md'
+                          ? 'bg-muted/50 rounded-tl-none'
+                          : 'bg-primary text-primary-foreground rounded-tr-none'
                       }`}>
                         <p className="text-sm leading-relaxed whitespace-pre-wrap">
                           {message.content}
@@ -180,7 +169,7 @@ export function AiAssistant() {
                     <div className="flex items-start gap-3">
                       <Avatar className="h-8 w-8 border bg-purple-100 dark:bg-purple-900">
                         <AvatarFallback className="bg-purple-500 text-white">
-                          <Sparkles className="h-4 w-4" />
+                          <Cat className="h-4 w-4" />
                         </AvatarFallback>
                       </Avatar>
                       <div className="bg-muted/80 p-3 rounded-lg rounded-tl-none shadow-sm">
@@ -200,7 +189,7 @@ export function AiAssistant() {
                         <button
                           key={index}
                           onClick={() => handleSuggestionClick(prompt)}
-                          className="px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/50 dark:hover:bg-purple-900 rounded-full text-xs font-medium transition-colors duration-200 flex items-center gap-1"
+                          className="px-3 py-1.5 border hover:bg-muted rounded-full text-xs transition-colors duration-200 flex items-center gap-1"
                           disabled={isLoading}
                         >
                           <Lightbulb className="h-3 w-3" />
@@ -213,19 +202,13 @@ export function AiAssistant() {
             </ScrollArea>
             
             <div className="p-3 border-t bg-background/50 backdrop-blur">
-              <form onSubmit={handleSubmit} className="relative">
-                <Textarea
-                  placeholder="Ask about your productivity, tasks, goals, or anything else..."
-                  className="pr-16 resize-none border-0 bg-background/50 focus-visible:ring-1 focus-visible:ring-purple-500"
-                  rows={1}
+              <form onSubmit={handleSubmit} className="relative flex items-center">
+                <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Ask me anything..."
+                  className="pl-9 pr-16 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-purple-500"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSubmit(e);
-                    }
-                  }}
                   disabled={isLoading}
                 />
                 <Button 

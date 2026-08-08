@@ -24,21 +24,32 @@ export const getNotes = async (userId: string): Promise<Note[]> => {
 
 export const addNote = async (note: Omit<Note, 'id' | 'createdAt'>) => {
     try {
+        const validNoteData = Object.fromEntries(
+            Object.entries(note).filter(([_, v]) => v !== undefined)
+        );
+
         await addDoc(notesCollection, {
-            ...note,
+            ...validNoteData,
             createdAt: serverTimestamp(),
         });
     } catch (error) {
         console.error("Error adding note: ", error);
+        throw error;
     }
 };
 
 export const updateNote = async (noteId: string, updates: Partial<Note>) => {
     const noteDoc = doc(db, 'notes', noteId);
+    
+    const validUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([_, v]) => v !== undefined)
+    );
+
     try {
-        await updateDoc(noteDoc, updates);
+        await updateDoc(noteDoc, validUpdates);
     } catch (error) {
         console.error("Error updating note: ", error);
+        throw error;
     }
 };
 
@@ -48,5 +59,6 @@ export const deleteNote = async (noteId: string) => {
         await deleteDoc(noteDoc);
     } catch (error) {
         console.error("Error deleting note: ", error);
+        throw error;
     }
 };

@@ -27,30 +27,40 @@ export const getTasks = async (userId: string): Promise<Task[]> => {
 
 export const addTask = async (task: Omit<Task, 'id' | 'createdAt' | 'completedAt'>) => {
     try {
+        // Firestore rejects undefined values, so we filter them out
+        const validTaskData = Object.fromEntries(
+            Object.entries(task).filter(([_, v]) => v !== undefined)
+        );
+
         await addDoc(tasksCollection, {
-            ...task,
+            ...validTaskData,
             createdAt: serverTimestamp(),
         });
     } catch (error) {
         console.error("Error adding task: ", error);
+        throw error;
     }
 };
 
 export const updateTask = async (taskId: string, updates: Partial<Omit<Task, 'id' | 'userId'>>) => {
     const taskDoc = doc(db, 'tasks', taskId);
-    const updateData: any = { ...updates };
+    
+    // Filter out undefined values
+    const validUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([_, v]) => v !== undefined)
+    );
+    
+    const updateData: any = { ...validUpdates };
+    
     if (updates.completed === true) {
         updateData.completedAt = serverTimestamp();
-    } else if (updates.completed === false) {
-        // Firestore does not allow 'undefined' so we have to handle this differently
-        // or just let it be. If we want to remove the field, we need a different approach.
-        // For now, we'll assume completedAt can stay. To remove it, you'd use `deleteField()`.
     }
 
     try {
         await updateDoc(taskDoc, updateData);
     } catch (error) {
         console.error("Error updating task: ", error);
+        throw error;
     }
 };
 
@@ -60,6 +70,7 @@ export const deleteTask = async (taskId: string) => {
         await deleteDoc(taskDoc);
     } catch (error) {
         console.error("Error deleting task: ", error);
+        throw error;
     }
 };
 

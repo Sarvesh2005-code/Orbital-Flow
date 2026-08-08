@@ -5,10 +5,18 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './use-auth';
 import { RealtimeService } from '@/services/realtimeService';
 
+// Module-level caches to prevent skeleton flashes during navigation
+let cachedTasks: any[] | null = null;
+let cachedHabits: any[] | null = null;
+let cachedNotes: any[] | null = null;
+let cachedGoals: any[] | null = null;
+let cachedNotifications: any[] | null = null;
+let cachedProfile: any | null = null;
+
 export function useRealtimeTasks(filters?: { completed?: boolean; limit?: number }) {
   const { user } = useAuth();
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState<any[]>(cachedTasks || []);
+  const [loading, setLoading] = useState(!cachedTasks);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -18,20 +26,19 @@ export function useRealtimeTasks(filters?: { completed?: boolean; limit?: number
       return;
     }
 
-    setLoading(true);
+    if (!cachedTasks) setLoading(true);
     setError(null);
 
     const unsubscribe = RealtimeService.subscribeToTasks(
       user.uid,
       (data) => {
-        console.log('Tasks updated:', data.length);
+        cachedTasks = data;
         setTasks(data);
         setLoading(false);
       },
       filters
     );
 
-    // Set a timeout to ensure loading doesn't stay true forever
     const loadingTimeout = setTimeout(() => {
       setLoading(false);
     }, 5000);
@@ -47,8 +54,8 @@ export function useRealtimeTasks(filters?: { completed?: boolean; limit?: number
 
 export function useRealtimeHabits() {
   const { user } = useAuth();
-  const [habits, setHabits] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [habits, setHabits] = useState<any[]>(cachedHabits || []);
+  const [loading, setLoading] = useState(!cachedHabits);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,13 +65,13 @@ export function useRealtimeHabits() {
       return;
     }
 
-    setLoading(true);
+    if (!cachedHabits) setLoading(true);
     setError(null);
 
     const unsubscribe = RealtimeService.subscribeToHabits(
       user.uid,
       (data) => {
-        console.log('Habits updated:', data.length);
+        cachedHabits = data;
         setHabits(data);
         setLoading(false);
       }
@@ -85,8 +92,8 @@ export function useRealtimeHabits() {
 
 export function useRealtimeNotes() {
   const { user } = useAuth();
-  const [notes, setNotes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState<any[]>(cachedNotes || []);
+  const [loading, setLoading] = useState(!cachedNotes);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -96,12 +103,13 @@ export function useRealtimeNotes() {
       return;
     }
 
-    setLoading(true);
+    if (!cachedNotes) setLoading(true);
     setError(null);
 
     const unsubscribe = RealtimeService.subscribeToNotes(
       user.uid,
       (data) => {
+        cachedNotes = data;
         setNotes(data);
         setLoading(false);
       }
@@ -117,8 +125,8 @@ export function useRealtimeNotes() {
 
 export function useRealtimeGoals() {
   const { user } = useAuth();
-  const [goals, setGoals] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [goals, setGoals] = useState<any[]>(cachedGoals || []);
+  const [loading, setLoading] = useState(!cachedGoals);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -128,12 +136,13 @@ export function useRealtimeGoals() {
       return;
     }
 
-    setLoading(true);
+    if (!cachedGoals) setLoading(true);
     setError(null);
 
     const unsubscribe = RealtimeService.subscribeToGoals(
       user.uid,
       (data) => {
+        cachedGoals = data;
         setGoals(data);
         setLoading(false);
       }
@@ -149,10 +158,12 @@ export function useRealtimeGoals() {
 
 export function useRealtimeNotifications() {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<any[]>(cachedNotifications || []);
+  const [loading, setLoading] = useState(!cachedNotifications);
   const [error, setError] = useState<string | null>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(
+    cachedNotifications ? cachedNotifications.filter(n => !n.isRead).length : 0
+  );
 
   useEffect(() => {
     if (!user) {
@@ -162,12 +173,13 @@ export function useRealtimeNotifications() {
       return;
     }
 
-    setLoading(true);
+    if (!cachedNotifications) setLoading(true);
     setError(null);
 
     const unsubscribe = RealtimeService.subscribeToNotifications(
       user.uid,
       (data) => {
+        cachedNotifications = data;
         setNotifications(data);
         setUnreadCount(data.filter(n => !n.isRead).length);
         setLoading(false);
@@ -184,8 +196,8 @@ export function useRealtimeNotifications() {
 
 export function useRealtimeUserProfile() {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<any>(cachedProfile || null);
+  const [loading, setLoading] = useState(!cachedProfile);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -195,12 +207,13 @@ export function useRealtimeUserProfile() {
       return;
     }
 
-    setLoading(true);
+    if (!cachedProfile) setLoading(true);
     setError(null);
 
     const unsubscribe = RealtimeService.subscribeToUserProfile(
       user.uid,
       (data) => {
+        cachedProfile = data;
         setProfile(data);
         setLoading(false);
       }

@@ -27,21 +27,32 @@ export const getHabits = async (userId: string): Promise<Habit[]> => {
 
 export const addHabit = async (habit: Omit<Habit, 'id'>) => {
     try {
+        const validHabitData = Object.fromEntries(
+            Object.entries(habit).filter(([_, v]) => v !== undefined)
+        );
+        
         await addDoc(habitsCollection, {
-            ...habit,
+            ...validHabitData,
             createdAt: serverTimestamp(),
         });
     } catch (error) {
         console.error("Error adding habit: ", error);
+        throw error;
     }
 };
 
 export const updateHabit = async (habitId: string, updates: Partial<Habit>) => {
     const habitDoc = doc(db, 'habits', habitId);
+    
+    const validUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([_, v]) => v !== undefined)
+    );
+    
     try {
-        await updateDoc(habitDoc, updates);
+        await updateDoc(habitDoc, validUpdates);
     } catch (error) {
         console.error("Error updating habit: ", error);
+        throw error;
     }
 };
 
@@ -51,5 +62,6 @@ export const deleteHabit = async (habitId: string) => {
         await deleteDoc(habitDoc);
     } catch (error) {
         console.error("Error deleting habit: ", error);
+        throw error;
     }
 };

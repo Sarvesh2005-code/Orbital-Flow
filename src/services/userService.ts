@@ -20,22 +20,24 @@ export interface UserProfile {
   updatedAt?: any; // FirebaseFirestore.Timestamp
 }
 
-// Create a new user document in Firestore
 export const createUserDocument = async (user: User, additionalData: Record<string, any> = {}) => {
   if (!user) return;
   
   const userRef = doc(db, 'users', user.uid);
-  const userSnap = await getDoc(userRef);
+  let userSnap = null;
   
-  if (!userSnap.exists()) {
+  try {
+    userSnap = await getDoc(userRef);
+  } catch (error) {
+    console.warn('Warning: Could not fetch user doc (might be permission propagation delay):', error);
+  }
+  
+  if (!userSnap || !userSnap.exists()) {
     const { displayName, email, photoURL } = user;
     
     try {
-      const userData: UserProfile = {
-        displayName: displayName || undefined,
-        email: email || undefined,
-        photoURL: photoURL || undefined,
-        name: additionalData.name || displayName || undefined,
+      // Remove undefined values to prevent Firestore errors
+      const userData: Record<string, any> = {
         theme: 'system',
         emailNotifications: true,
         pushNotifications: true,
@@ -44,18 +46,30 @@ export const createUserDocument = async (user: User, additionalData: Record<stri
         updatedAt: serverTimestamp(),
         ...additionalData
       };
+
+      if (displayName) userData.displayName = displayName;
+      if (email) userData.email = email;
+      if (photoURL) userData.photoURL = photoURL;
+      if (additionalData.name || displayName) userData.name = additionalData.name || displayName;
       
-      await setDoc(userRef, userData);
+      // Use merge: true so if the document does exist (and we couldn't read it), we don't overwrite completely
+      await setDoc(userRef, userData, { merge: true });
       console.log('User document created successfully');
     } catch (error) {
       console.error('Error creating user document:', error);
+      throw error;
     }
   } else {
     // Update last active timestamp
-    await updateDoc(userRef, {
-      lastActive: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    try {
+      await setDoc(userRef, {
+        lastActive: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+    } catch (error) {
+      console.error('Error updating user document:', error);
+      throw error;
+    }
   }
 };
 
@@ -95,9 +109,9 @@ export const updateUserActivity = async (uid: string) => {
   
   try {
     const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, {
+    await setDoc(userRef, {
       lastActive: serverTimestamp(),
-    });
+    }, { merge: true });
   } catch (error) {
     console.error('Error updating user activity:', error);
   }

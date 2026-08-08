@@ -28,21 +28,32 @@ export const getGoals = async (userId: string): Promise<Goal[]> => {
 
 export const addGoal = async (goal: Omit<Goal, 'id' | 'createdAt'>) => {
     try {
+        const validGoalData = Object.fromEntries(
+            Object.entries(goal).filter(([_, v]) => v !== undefined)
+        );
+
         await addDoc(goalsCollection, {
-            ...goal,
+            ...validGoalData,
             createdAt: serverTimestamp(),
         });
     } catch (error) {
         console.error("Error adding goal: ", error);
+        throw error;
     }
 };
 
 export const updateGoal = async (goalId: string, updates: Partial<Goal>) => {
     const goalDoc = doc(db, 'goals', goalId);
+    
+    const validUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([_, v]) => v !== undefined)
+    );
+
     try {
-        await updateDoc(goalDoc, updates);
+        await updateDoc(goalDoc, validUpdates);
     } catch (error) {
         console.error("Error updating goal: ", error);
+        throw error;
     }
 };
 
@@ -52,5 +63,6 @@ export const deleteGoal = async (goalId: string) => {
         await deleteDoc(goalDoc);
     } catch (error) {
         console.error("Error deleting goal: ", error);
+        throw error;
     }
 };

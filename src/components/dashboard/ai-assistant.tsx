@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,7 @@ import { ArrowUp, User, Cat, Lightbulb, RefreshCw, Search } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { answerProductivityQueries } from '@/ai/flows/answer-queries';
 import { Skeleton } from '../ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
@@ -73,15 +73,15 @@ export function AiAssistant() {
       
       const queryLower = query.toLowerCase();
       if (queryLower.includes('task') || queryLower.includes('todo')) {
-        fallbackResponse += "📋 **Task Management Tips:**\n• Prioritize tasks using the Eisenhower Matrix (urgent vs important)\n• Break large tasks into smaller, manageable chunks\n• Set specific deadlines and stick to them\n• Review your task list daily";
+        fallbackResponse += "ðŸ“‹ **Task Management Tips:**\nâ€¢ Prioritize tasks using the Eisenhower Matrix (urgent vs important)\nâ€¢ Break large tasks into smaller, manageable chunks\nâ€¢ Set specific deadlines and stick to them\nâ€¢ Review your task list daily";
       } else if (queryLower.includes('goal') || queryLower.includes('objective')) {
-        fallbackResponse += "🎯 **Goal Setting Advice:**\n• Set SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound)\n• Break long-term goals into smaller milestones\n• Track your progress regularly\n• Celebrate small wins along the way";
+        fallbackResponse += "ðŸŽ¯ **Goal Setting Advice:**\nâ€¢ Set SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound)\nâ€¢ Break long-term goals into smaller milestones\nâ€¢ Track your progress regularly\nâ€¢ Celebrate small wins along the way";
       } else if (queryLower.includes('habit') || queryLower.includes('routine')) {
-        fallbackResponse += "🔄 **Habit Building Tips:**\n• Start small and be consistent\n• Stack new habits onto existing ones\n• Track your streak to stay motivated\n• Don't break the chain - aim for daily progress";
+        fallbackResponse += "ðŸ”„ **Habit Building Tips:**\nâ€¢ Start small and be consistent\nâ€¢ Stack new habits onto existing ones\nâ€¢ Track your streak to stay motivated\nâ€¢ Don't break the chain - aim for daily progress";
       } else if (queryLower.includes('focus') || queryLower.includes('productivity')) {
-        fallbackResponse += "⚡ **Focus & Productivity Tips:**\n• Use the Pomodoro Technique (25min work, 5min break)\n• Eliminate distractions during work sessions\n• Tackle your most important task first thing\n• Schedule breaks to maintain energy";
+        fallbackResponse += "âš¡ **Focus & Productivity Tips:**\nâ€¢ Use the Pomodoro Technique (25min work, 5min break)\nâ€¢ Eliminate distractions during work sessions\nâ€¢ Tackle your most important task first thing\nâ€¢ Schedule breaks to maintain energy";
       } else {
-        fallbackResponse += "✨ **General Productivity Advice:**\n• Plan your day the night before\n• Focus on progress, not perfection\n• Use tools like Orbital Flow to track everything\n• Review and adjust your systems regularly\n\n💡 Try asking more specific questions about tasks, goals, habits, or focus when I'm back online!";
+        fallbackResponse += "âœ¨ **General Productivity Advice:**\nâ€¢ Plan your day the night before\nâ€¢ Focus on progress, not perfection\nâ€¢ Use tools like Orbital Flow to track everything\nâ€¢ Review and adjust your systems regularly\n\nðŸ’¡ Try asking more specific questions about tasks, goals, habits, or focus when I'm back online!";
       }
       
       const assistantMessage: Message = { role: 'assistant', content: fallbackResponse };

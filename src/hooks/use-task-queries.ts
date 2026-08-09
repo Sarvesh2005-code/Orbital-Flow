@@ -2,7 +2,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from './use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { getTasks, createTask, updateTask, deleteTask } from '@/services/taskService';
 import { useToast } from './use-toast';
 import { useEffect } from 'react';

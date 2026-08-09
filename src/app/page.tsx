@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { LandingPage } from '@/components/layout/landing-page';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Image from 'next/image';

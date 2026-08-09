@@ -1,4 +1,4 @@
-// src/app/settings/page.tsx
+﻿// src/app/settings/page.tsx
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,7 +28,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { useDarkMode } from '@/hooks/use-dark-mode';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useRealtimeUserProfile } from '@/hooks/use-realtime-data';
 import { useState, useEffect } from 'react';
 import { updateUserProfile } from '@/services/userService';
@@ -261,7 +261,7 @@ export default function SettingsPage() {
                 <div className="flex-1">
                   <h3 className="font-medium">{user?.email}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {user?.emailVerified ? '✓ Verified' : '⚠️ Email not verified'}
+                    {user?.emailVerified ? 'âœ“ Verified' : 'âš ï¸ Email not verified'}
                   </p>
                   {!user?.emailVerified && (
                     <Button 

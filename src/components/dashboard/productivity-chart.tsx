@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { TrendingUp, BarChart3 } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useRealtimeTasks } from '@/hooks/use-realtime-data';
 import { useEffect, useState, useMemo } from 'react';
 import { subDays, format } from 'date-fns';

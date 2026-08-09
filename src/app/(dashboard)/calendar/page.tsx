@@ -1,8 +1,8 @@
-// src/app/calendar/page.tsx
+﻿// src/app/calendar/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Task, getTasks } from '@/services/taskService';

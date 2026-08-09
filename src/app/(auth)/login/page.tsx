@@ -1,4 +1,4 @@
-// src/app/login/page.tsx
+﻿// src/app/login/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { Eye, EyeOff, Lock, Mail, Loader2, AlertCircle, CheckCircle2, Sparkles, Sun, Moon, Send } from 'lucide-react';
 import { Suspense } from 'react';
 import Image from 'next/image';
@@ -180,7 +180,7 @@ function LoginContent() {
         });
       } else {
         toast({
-          title: 'Welcome back! 🎉',
+          title: 'Welcome back! ðŸŽ‰',
           description: 'Successfully logged in to Orbital Flow.',
         });
       }

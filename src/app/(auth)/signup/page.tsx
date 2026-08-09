@@ -1,4 +1,4 @@
-// src/app/signup/page.tsx
+﻿// src/app/signup/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { Eye, EyeOff, Lock, Mail, Loader2, AlertCircle, Sparkles, Sun, Moon, User } from 'lucide-react';
 import Image from 'next/image';
 

@@ -1,4 +1,4 @@
-// src/components/dashboard/todays-focus.tsx
+﻿// src/components/dashboard/todays-focus.tsx
 'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -7,7 +7,7 @@ import { Button } from '../ui/button';
 import { MoreHorizontal, Plus, Focus, CheckCircle2, Clock } from 'lucide-react';
 import { useState } from 'react';
 import { Task } from '@/services/taskService';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useTodaysFocus, useUpdateTask } from '@/hooks/use-task-queries';
 import { Skeleton } from '../ui/skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -32,7 +32,7 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void }) {
         onSuccess: () => {
           if (completed) {
             toast({
-              title: 'Task Completed! 🎉',
+              title: 'Task Completed! ðŸŽ‰',
               description: 'Great job! Keep up the momentum.',
               variant: 'default',
             });

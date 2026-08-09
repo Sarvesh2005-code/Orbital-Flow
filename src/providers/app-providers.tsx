@@ -1,7 +1,7 @@
 'use client';
 
-import { AuthProvider } from '@/hooks/use-auth';
-import { QueryProvider } from '@/providers/QueryProvider';
+import { AuthProvider } from '@/providers/auth-provider';
+import { QueryProvider } from '@/providers/query-provider';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 import { ReactNode } from 'react';
 

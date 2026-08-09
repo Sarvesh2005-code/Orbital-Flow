@@ -1,9 +1,9 @@
-// src/components/dashboard/habit-tracker.tsx
+﻿// src/components/dashboard/habit-tracker.tsx
 'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check, Dumbbell, BookOpen, GlassWater, BrainCircuit, Plus, MoreHorizontal } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useEffect, useState } from 'react';
 import { Habit, getHabits, addHabit, updateHabit, HabitIcon } from '@/services/habitService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';

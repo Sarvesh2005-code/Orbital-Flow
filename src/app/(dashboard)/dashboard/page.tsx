@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { WelcomeHeader } from '@/components/dashboard/welcome-header';
 import { TodaysFocus } from '@/components/dashboard/todays-focus';
@@ -6,7 +6,7 @@ import { HabitTracker } from '@/components/dashboard/habit-tracker';
 import { UpcomingDeadlines } from '@/components/dashboard/upcoming-deadlines';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useCallback, useState } from 'react';
 
 const ProductivityChart = dynamic(() => import('@/components/dashboard/productivity-chart').then(mod => mod.ProductivityChart), {

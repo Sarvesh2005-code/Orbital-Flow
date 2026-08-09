@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from './use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { RealtimeService } from '@/services/realtimeService';
 
 // Module-level caches to prevent skeleton flashes during navigation

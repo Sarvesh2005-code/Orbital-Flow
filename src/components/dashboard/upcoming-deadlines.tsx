@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { MoreHorizontal, CalendarClock, Plus, Trash2 } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useEffect, useState } from 'react';
 import { Deadline, getDeadlines, addDeadline, deleteDeadline } from '@/services/deadlineService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';

@@ -1,7 +1,7 @@
-// src/components/add-task-dialog.tsx
+﻿// src/components/add-task-dialog.tsx
 'use client';
 import { useState } from 'react';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { addTask, Task } from '@/services/taskService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

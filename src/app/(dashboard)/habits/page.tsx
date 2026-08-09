@@ -1,10 +1,10 @@
-// src/app/habits/page.tsx
+﻿// src/app/habits/page.tsx
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check, Dumbbell, BookOpen, GlassWater, BrainCircuit, Plus, Trash2, Flame, Target } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useState } from 'react';
 import { Habit, addHabit, updateHabit, deleteHabit, HabitIcon } from '@/services/habitService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -43,7 +43,7 @@ export default function HabitsPage() {
         await updateHabit(habit.id, { streak, lastCompleted: today });
         
         toast({
-          title: 'Habit completed! 🎉',
+          title: 'Habit completed! ðŸŽ‰',
           description: `Great job! You're on a ${streak} day streak!`,
         });
       } catch (error) {
@@ -165,10 +165,10 @@ export default function HabitsPage() {
                 <SelectValue placeholder="Choose an icon" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Dumbbell">💪 Workout</SelectItem>
-                <SelectItem value="BookOpen">📚 Read</SelectItem>
-                <SelectItem value="GlassWater">💧 Hydrate</SelectItem>
-                <SelectItem value="BrainCircuit">🧘 Meditate</SelectItem>
+                <SelectItem value="Dumbbell">ðŸ’ª Workout</SelectItem>
+                <SelectItem value="BookOpen">ðŸ“š Read</SelectItem>
+                <SelectItem value="GlassWater">ðŸ’§ Hydrate</SelectItem>
+                <SelectItem value="BrainCircuit">ðŸ§˜ Meditate</SelectItem>
               </SelectContent>
             </Select>
             <Button type="submit" className='w-full' disabled={isSubmitting}>
@@ -244,7 +244,7 @@ export default function HabitsPage() {
                         <h3 className="text-lg font-semibold mb-1">{habit.name}</h3>
                         {habit.streak > 0 && (
                           <p className="text-sm text-muted-foreground">
-                            {habit.streak} day streak! 🔥
+                            {habit.streak} day streak! ðŸ”¥
                           </p>
                         )}
                       </div>
@@ -261,7 +261,7 @@ export default function HabitsPage() {
                         disabled={isCompleted}
                       >
                         <Check className="h-5 w-5 mr-2" />
-                        {isCompleted ? 'Completed Today! ✓' : 'Mark as Done'}
+                        {isCompleted ? 'Completed Today! âœ“' : 'Mark as Done'}
                       </Button>
                       
                       <Button 

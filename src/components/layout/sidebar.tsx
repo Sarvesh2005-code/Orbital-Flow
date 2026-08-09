@@ -1,4 +1,4 @@
-// src/components/layout/sidebar.tsx
+﻿// src/components/layout/sidebar.tsx
 'use client';
 
 import {
@@ -36,7 +36,7 @@ import Image from 'next/image';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 import { useDarkMode } from '@/hooks/use-dark-mode';
 import { useRealtimeNotifications } from '@/hooks/use-realtime-data';
 import { motion } from 'framer-motion';

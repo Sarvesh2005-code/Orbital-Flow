@@ -7,6 +7,8 @@ export interface Task {
     title: string;
     priority: 'High' | 'Medium' | 'Low';
     completed: boolean;
+    status?: 'todo' | 'in-progress' | 'done';
+    order?: number;
     userId: string;
     dueDate?: string;
     createdAt: Timestamp;

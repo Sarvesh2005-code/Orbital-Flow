@@ -1,5 +1,5 @@
-'use client';
-import { useAuth } from '@/hooks/use-auth';
+﻿'use client';
+import { useAuth } from '@/providers/auth-provider';
 import { Calendar, Clock, Target } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';

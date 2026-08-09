@@ -1,4 +1,4 @@
-// src/components/layout/landing-page.tsx
+﻿// src/components/layout/landing-page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -12,13 +12,13 @@ import {
 import { useState, useEffect, memo, useMemo } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 
-import { OrbitalFlowLogo } from '@/components/landing/OrbitalFlowLogo';
-import { AnimatedCounter } from '@/components/landing/AnimatedCounter';
-import { FeatureCard } from '@/components/landing/FeatureCard';
-import { PricingCard } from '@/components/landing/PricingCard';
-import { FloatingElement } from '@/components/landing/FloatingElement';
+import { OrbitalFlowLogo } from '@/components/landing/orbital-flow-logo';
+import { AnimatedCounter } from '@/components/landing/animated-counter';
+import { FeatureCard } from '@/components/landing/feature-card';
+import { PricingCard } from '@/components/landing/pricing-card';
+import { FloatingElement } from '@/components/landing/floating-element';
 
 export function LandingPage() {
     const [isVisible, setIsVisible] = useState(false);
@@ -829,7 +829,7 @@ export function LandingPage() {
                                     </Button>
                                 </div>
                                 <p className={`text-sm mt-8 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                                    No credit card required • 14-day free trial • Cancel anytime • GDPR compliant
+                                    No credit card required â€¢ 14-day free trial â€¢ Cancel anytime â€¢ GDPR compliant
                                 </p>
                             </div>
                         </div>
@@ -958,7 +958,7 @@ export function LandingPage() {
                         </div>
                         <div className={`text-sm ${isDark ? 'text-zinc-500' : 'text-zinc-500'} text-center md:text-right`}>
                             <p>&copy; {new Date().getFullYear()} Orbital Flow, Inc. All rights reserved.</p>
-                            <p className="mt-1">Made with ❤️ for creative minds worldwide</p>
+                            <p className="mt-1">Made with â¤ï¸ for creative minds worldwide</p>
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-﻿// src/components/layout/sidebar.tsx
+// src/components/layout/sidebar.tsx
 'use client';
 
 import {
@@ -11,7 +11,7 @@ import {
   SidebarFooter,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { UserAvatar } from '@/components/user-avatar';
+import { UserAvatar } from '@/components/layout/user-avatar';
 import { Badge } from '@/components/ui/badge';
 import {
   Bell,

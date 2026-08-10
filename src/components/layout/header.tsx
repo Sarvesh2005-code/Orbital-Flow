@@ -5,7 +5,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Bell, PlusCircle } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { AddTaskDialog } from '../add-task-dialog';
+import { AddTaskDialog } from '../dashboard/add-task-dialog';
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';

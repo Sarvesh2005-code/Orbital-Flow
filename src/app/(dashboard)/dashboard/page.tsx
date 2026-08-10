@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { WelcomeHeader } from '@/components/dashboard/welcome-header';
 import { TodaysFocus } from '@/components/dashboard/todays-focus';
@@ -28,9 +28,6 @@ export default function DashboardPage() {
 
     return (
         <div className="min-h-screen bg-transparent relative">
-            {/* Ambient Background */}
-            <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-500/10 via-background to-background pointer-events-none" />
-            <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-500/10 via-background to-background pointer-events-none" />
             <div className="flex items-center gap-3 px-4 pt-4 lg:hidden">
                 <Image src="/icons/orbital-flow-logo.png" alt="Orbital Flow" width={28} height={28} className="rounded-md" />
                 <span className="text-sm text-muted-foreground">Orbital Flow</span>

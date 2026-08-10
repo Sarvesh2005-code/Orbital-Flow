@@ -17,8 +17,8 @@ export function QueryProvider({ children }: { children: ReactNode }) {
             gcTime: 1000 * 60 * 30, // 30 minutes (was cacheTime in v4)
             // Retry failed requests
             retry: (failureCount, error: any) => {
-              // Don't retry on auth errors
-              if (error?.code?.includes('auth/')) {
+              // Don't retry on auth or permission errors
+              if (error?.code?.includes('auth/') || error?.code === 'permission-denied') {
                 return false;
               }
               // Retry up to 3 times for other errors

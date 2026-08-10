@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { MoreHorizontal, CalendarClock, Plus, Trash2 } from 'lucide-react';
@@ -20,9 +20,15 @@ export function UpcomingDeadlines() {
   const fetchDeadlines = async () => {
     if (user) {
       setLoading(true);
-      const userDeadlines = await getDeadlines(user.uid);
-      setDeadlines(userDeadlines);
-      setLoading(false);
+      try {
+        const userDeadlines = await getDeadlines(user.uid);
+        setDeadlines(userDeadlines);
+      } catch (error) {
+        console.error("Failed to fetch deadlines:", error);
+        setDeadlines([]);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

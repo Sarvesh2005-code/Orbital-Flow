@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { useAuth } from '@/providers/auth-provider';
 import { answerProductivityQueries } from '@/ai/flows/answer-queries';
 import { Skeleton } from '../ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { useRealtimeTasks, useRealtimeHabits, useRealtimeNotes, useRealtimeGoals } from '@/hooks/use-realtime-data';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -38,6 +39,12 @@ export function AiAssistant() {
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
+  // Fetch real-time context data for AI
+  const { tasks } = useRealtimeTasks();
+  const { habits } = useRealtimeHabits();
+  const { notes } = useRealtimeNotes();
+  const { goals } = useRealtimeGoals();
+
   useEffect(() => {
     if (scrollAreaRef.current) {
         scrollAreaRef.current.scrollTo({
@@ -62,7 +69,17 @@ export function AiAssistant() {
     setShowSuggestions(false);
 
     try {
-      const response = await answerProductivityQueries({ query, userId: user.uid });
+      const contextData = JSON.stringify({
+        tasks: tasks.map(t => ({ title: t.title, priority: t.priority, completed: t.completed, dueDate: t.dueDate })),
+        habits: habits.map(h => ({ name: h.name, streak: h.streak })),
+        goals: goals.map(g => ({ title: g.title, status: g.status })),
+      });
+      
+      const response = await answerProductivityQueries({ 
+        query, 
+        userId: user.uid,
+        context: contextData
+      });
       const assistantMessage: Message = { role: 'assistant', content: response.answer };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {

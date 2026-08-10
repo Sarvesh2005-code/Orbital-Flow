@@ -2,21 +2,27 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bell, CheckCheck } from 'lucide-react';
+import { Bell, CheckCheck, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useEffect } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useEffect, useState } from 'react';
 import { NotificationService } from '@/services/notificationService';
-
-const placeholderNotifications = [
-    { id: 1, type: 'task', message: 'Your task "Design the new landing page" is due tomorrow.', time: '2 hours ago' },
-    { id: 2, type: 'goal', message: 'You\'ve made progress on your "Learn Spanish" goal!', time: '1 day ago' },
-    { id: 3, type: 'habit', message: 'You completed your "Morning workout" habit. Keep it up!', time: '2 days ago' },
-    { id: 4, type: 'system', message: 'Welcome to Orbital Flow!', time: '3 days ago' },
-];
+import { useRealtimeNotifications } from '@/hooks/use-realtime-data';
+import { useAuth } from '@/providers/auth-provider';
+import { useToast } from '@/hooks/use-toast';
 
 export default function NotificationsPage() {
+    const { notifications, loading } = useRealtimeNotifications();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [permissionStatus, setPermissionStatus] = useState<NotificationPermission>('default');
+
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setPermissionStatus(Notification.permission);
+        }
+        
         const unsub = NotificationService.onMessage((payload) => {
             console.log('Foreground notification:', payload);
         });
@@ -24,8 +30,45 @@ export default function NotificationsPage() {
             if (typeof unsub === 'function') unsub();
         };
     }, []);
+
+    const requestPermission = async () => {
+        try {
+            const token = await NotificationService.requestPermission();
+            if (token && user) {
+                await NotificationService.saveFCMToken(user.uid, token);
+                setPermissionStatus('granted');
+                toast({
+                    title: 'Notifications Enabled',
+                    description: 'You will now receive push notifications.',
+                });
+            } else if (Notification.permission === 'denied') {
+                setPermissionStatus('denied');
+                toast({
+                    title: 'Permission Denied',
+                    description: 'You have blocked notifications. Please enable them in your browser settings.',
+                    variant: 'destructive'
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto space-y-6">
+            {permissionStatus === 'default' && (
+                <Alert className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+                    <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <AlertTitle className="text-blue-800 dark:text-blue-300">Enable Push Notifications</AlertTitle>
+                    <AlertDescription className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2 text-blue-700/80 dark:text-blue-400/80">
+                        Never miss a deadline or habit reminder again. Enable push notifications for Orbital Flow.
+                        <Button size="sm" onClick={requestPermission} className="bg-blue-600 hover:bg-blue-700 text-white border-0">
+                            Enable Notifications
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+            )}
+
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
@@ -34,33 +77,51 @@ export default function NotificationsPage() {
                             Notifications
                         </CardTitle>
                         <CardDescription>
-                            You have {placeholderNotifications.filter(n=>!n.hasOwnProperty('read')).length} unread notifications.
+                            You have {notifications.filter(n=>!n.isRead).length} unread notifications.
                         </CardDescription>
                     </div>
-                    <Button variant="ghost">
-                        <CheckCheck className="mr-2 h-4 w-4" />
-                        Mark all as read
-                    </Button>
+                    {notifications.length > 0 && (
+                        <Button variant="ghost">
+                            <CheckCheck className="mr-2 h-4 w-4" />
+                            Mark all as read
+                        </Button>
+                    )}
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {placeholderNotifications.map(notification => (
-                            <div key={notification.id} className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
-                                <Avatar className="mt-1">
-                                    <AvatarFallback className="bg-primary text-primary-foreground">
-                                        <Bell className="h-5 w-5" />
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-grow">
-                                    <p className="font-medium">{notification.message}</p>
-                                    <p className="text-sm text-muted-foreground">{notification.time}</p>
+                    {loading ? (
+                        <div className="text-center py-8 text-muted-foreground animate-pulse">Loading notifications...</div>
+                    ) : notifications.length === 0 ? (
+                        <div className="text-center py-12 text-muted-foreground">
+                            <Bell className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                            <p>You're all caught up!</p>
+                            <p className="text-sm">No new notifications.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {notifications.map(notification => (
+                                <div key={notification.id} className={`flex items-start gap-4 p-3 rounded-lg ${notification.isRead ? 'opacity-70' : 'bg-muted/50'}`}>
+                                    <Avatar className="mt-1">
+                                        <AvatarFallback className="bg-primary text-primary-foreground">
+                                            <Bell className="h-5 w-5" />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-grow">
+                                        <p className="font-medium">{notification.message}</p>
+                                        {notification.createdAt && (
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                {new Date(notification.createdAt.seconds * 1000).toLocaleString()}
+                                            </p>
+                                        )}
+                                    </div>
+                                    {!notification.isRead && (
+                                        <Button variant="ghost" size="sm" onClick={() => notification.id && NotificationService.markAsRead(notification.id)}>
+                                            Mark Read
+                                        </Button>
+                                    )}
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="text-center pt-8">
-                         <p className="text-sm text-muted-foreground">This is a placeholder page for notifications and alarms.</p>
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

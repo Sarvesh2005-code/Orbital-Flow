@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/sidebar';
@@ -23,16 +23,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // Push notifications setup
     useEffect(() => {
         if (!loading && user) {
-            (async () => {
-                try {
-                    const token = await NotificationService.requestPermission();
-                    if (token) {
-                        await NotificationService.saveFCMToken(user.uid, token);
+            // Check if permission is already granted, but DO NOT request it on load.
+            // Modern browsers block silent requests. User must click a button to enable.
+            if (typeof window !== 'undefined' && Notification.permission === 'granted') {
+                (async () => {
+                    try {
+                        const token = await NotificationService.requestPermission();
+                        if (token) {
+                            await NotificationService.saveFCMToken(user.uid, token);
+                        }
+                    } catch (err) {
+                        // Ignore
                     }
-                } catch (err) {
-                    // Permission denied or error
-                }
-            })();
+                })();
+            }
         }
     }, [loading, user]);
 

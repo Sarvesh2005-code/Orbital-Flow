@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { Task, addTask, updateTask, deleteTask } from '@/services/taskService';
@@ -83,7 +83,7 @@ export default function TasksPage() {
             await updateTask(taskId, { completed, status: completed ? 'done' : 'todo' });
             toast({
                 title: completed ? 'Task completed!' : 'Task reopened',
-                description: completed ? 'Great job! ðŸŽ‰' : 'Task marked as incomplete.',
+                description: completed ? 'Great job! 🎉' : 'Task marked as incomplete.',
             });
         } catch (error) {
             // Revert on error
@@ -203,9 +203,9 @@ export default function TasksPage() {
                 )}
             </div>
             <Badge variant={getPriorityVariant(task.priority)} className={`text-xs ${task.completed ? 'opacity-50' : ''}`}>
-                {task.priority === 'High' && 'ðŸ”´'} 
-                {task.priority === 'Medium' && 'ðŸŸ¡'} 
-                {task.priority === 'Low' && 'ðŸŸ¢'} 
+                {task.priority === 'High' && '🔴'} 
+                {task.priority === 'Medium' && '🟡'} 
+                {task.priority === 'Low' && '🟢'} 
                 {task.priority}
             </Badge>
             <Button 
@@ -280,9 +280,9 @@ export default function TasksPage() {
                                     <SelectValue placeholder="Priority" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="High">ðŸ”´ High</SelectItem>
-                                    <SelectItem value="Medium">ðŸŸ¡ Medium</SelectItem>
-                                    <SelectItem value="Low">ðŸŸ¢ Low</SelectItem>
+                                    <SelectItem value="High">🔴 High</SelectItem>
+                                    <SelectItem value="Medium">🟡 Medium</SelectItem>
+                                    <SelectItem value="Low">🟢 Low</SelectItem>
                                 </SelectContent>
                             </Select>
                             <Button type="submit" disabled={isSubmitting} className="whitespace-nowrap">

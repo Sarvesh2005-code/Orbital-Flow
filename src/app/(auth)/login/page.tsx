@@ -1,4 +1,4 @@
-﻿// src/app/login/page.tsx
+// src/app/login/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -180,7 +180,7 @@ function LoginContent() {
         });
       } else {
         toast({
-          title: 'Welcome back! ðŸŽ‰',
+          title: 'Welcome back! 🎉',
           description: 'Successfully logged in to Orbital Flow.',
         });
       }

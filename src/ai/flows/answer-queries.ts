@@ -62,7 +62,12 @@ const answerProductivityQueriesFlow = ai.defineFlow(
     outputSchema: AnswerProductivityQueriesOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      return output!;
+    } catch (e: any) {
+      console.error('AI Flow Error:', e);
+      return { answer: `API_ERROR: ${e.message || String(e)}` };
+    }
   }
 );

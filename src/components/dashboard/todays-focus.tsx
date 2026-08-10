@@ -1,4 +1,4 @@
-﻿// src/components/dashboard/todays-focus.tsx
+// src/components/dashboard/todays-focus.tsx
 'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -32,7 +32,7 @@ export function TodaysFocus({ onTaskUpdate }: { onTaskUpdate: () => void }) {
         onSuccess: () => {
           if (completed) {
             toast({
-              title: 'Task Completed! ðŸŽ‰',
+              title: 'Task Completed! 🎉',
               description: 'Great job! Keep up the momentum.',
               variant: 'default',
             });

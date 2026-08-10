@@ -1,4 +1,4 @@
-﻿// src/app/calendar/page.tsx
+// src/app/calendar/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -24,14 +24,19 @@ export default function CalendarPage() {
         if (user) {
             const fetchEvents = async () => {
                 setLoading(true);
-                const tasks = await getTasks(user.uid);
-                const deadlines = await getDeadlines(user.uid);
+                try {
+                    const tasks = await getTasks(user.uid);
+                    const deadlines = await getDeadlines(user.uid);
 
-                const taskEvents: CalendarEvent[] = tasks.map(t => ({ ...t, type: 'task' }));
-                const deadlineEvents: CalendarEvent[] = deadlines.map(d => ({ ...d, type: 'deadline' }));
+                    const taskEvents: CalendarEvent[] = tasks.map(t => ({ ...t, type: 'task' }));
+                    const deadlineEvents: CalendarEvent[] = deadlines.map(d => ({ ...d, type: 'deadline' }));
 
-                setEvents([...taskEvents, ...deadlineEvents]);
-                setLoading(false);
+                    setEvents([...taskEvents, ...deadlineEvents]);
+                } catch (error) {
+                    console.error("Failed to fetch events for calendar:", error);
+                } finally {
+                    setLoading(false);
+                }
             };
             fetchEvents();
         }

@@ -1,4 +1,4 @@
-﻿// src/app/habits/page.tsx
+// src/app/habits/page.tsx
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,7 +43,7 @@ export default function HabitsPage() {
         await updateHabit(habit.id, { streak, lastCompleted: today });
         
         toast({
-          title: 'Habit completed! ðŸŽ‰',
+          title: 'Habit completed! 🎉',
           description: `Great job! You're on a ${streak} day streak!`,
         });
       } catch (error) {
@@ -165,10 +165,10 @@ export default function HabitsPage() {
                 <SelectValue placeholder="Choose an icon" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Dumbbell">ðŸ’ª Workout</SelectItem>
-                <SelectItem value="BookOpen">ðŸ“š Read</SelectItem>
-                <SelectItem value="GlassWater">ðŸ’§ Hydrate</SelectItem>
-                <SelectItem value="BrainCircuit">ðŸ§˜ Meditate</SelectItem>
+                <SelectItem value="Dumbbell">💪 Workout</SelectItem>
+                <SelectItem value="BookOpen">📚 Read</SelectItem>
+                <SelectItem value="GlassWater">💧 Hydrate</SelectItem>
+                <SelectItem value="BrainCircuit">🧘 Meditate</SelectItem>
               </SelectContent>
             </Select>
             <Button type="submit" className='w-full' disabled={isSubmitting}>
@@ -244,7 +244,7 @@ export default function HabitsPage() {
                         <h3 className="text-lg font-semibold mb-1">{habit.name}</h3>
                         {habit.streak > 0 && (
                           <p className="text-sm text-muted-foreground">
-                            {habit.streak} day streak! ðŸ”¥
+                            {habit.streak} day streak! 🔥
                           </p>
                         )}
                       </div>
@@ -261,7 +261,7 @@ export default function HabitsPage() {
                         disabled={isCompleted}
                       >
                         <Check className="h-5 w-5 mr-2" />
-                        {isCompleted ? 'Completed Today! âœ“' : 'Mark as Done'}
+                        {isCompleted ? 'Completed Today! ✓' : 'Mark as Done'}
                       </Button>
                       
                       <Button 

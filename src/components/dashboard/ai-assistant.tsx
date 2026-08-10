@@ -6,6 +6,8 @@ import { ArrowUp, User, Cat, Lightbulb, RefreshCw, Search } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useAuth } from '@/providers/auth-provider';
 import { answerProductivityQueries } from '@/ai/flows/answer-queries';
 import { Skeleton } from '../ui/skeleton';
@@ -80,25 +82,29 @@ export function AiAssistant() {
         userId: user.uid,
         context: contextData
       });
+      if (response.answer.startsWith('API_ERROR:')) {
+        throw new Error(response.answer.substring(10).trim());
+      }
       const assistantMessage: Message = { role: 'assistant', content: response.answer };
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI Assistant error:', error);
       
+      const errorMessage = error?.message || 'Unknown error';
       // Provide helpful fallback responses based on query keywords
-      let fallbackResponse = "I'm currently experiencing connectivity issues, but here are some general productivity tips:\n\n";
+      let fallbackResponse = `⚠️ **Google API Connection Failed**\n\nThe AI couldn't process your request because of an API error. The exact error from Google is:\n\`${errorMessage}\`\n\nTo fix this, please ensure your \`GOOGLEAI_API_KEY\` is valid and has the **Gemini API** enabled in Google Cloud.\n\n---\n\nMeanwhile, here are some general productivity tips based on your query:\n\n`;
       
       const queryLower = query.toLowerCase();
       if (queryLower.includes('task') || queryLower.includes('todo')) {
-        fallbackResponse += "ðŸ“‹ **Task Management Tips:**\nâ€¢ Prioritize tasks using the Eisenhower Matrix (urgent vs important)\nâ€¢ Break large tasks into smaller, manageable chunks\nâ€¢ Set specific deadlines and stick to them\nâ€¢ Review your task list daily";
+        fallbackResponse += "📋 **Task Management Tips:**\n- Prioritize tasks using the Eisenhower Matrix (urgent vs important)\n- Break large tasks into smaller, manageable chunks\n- Set specific deadlines and stick to them\n- Review your task list daily";
       } else if (queryLower.includes('goal') || queryLower.includes('objective')) {
-        fallbackResponse += "ðŸŽ¯ **Goal Setting Advice:**\nâ€¢ Set SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound)\nâ€¢ Break long-term goals into smaller milestones\nâ€¢ Track your progress regularly\nâ€¢ Celebrate small wins along the way";
+        fallbackResponse += "🎯 **Goal Setting Advice:**\n- Set SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound)\n- Break long-term goals into smaller milestones\n- Track your progress regularly\n- Celebrate small wins along the way";
       } else if (queryLower.includes('habit') || queryLower.includes('routine')) {
-        fallbackResponse += "ðŸ”„ **Habit Building Tips:**\nâ€¢ Start small and be consistent\nâ€¢ Stack new habits onto existing ones\nâ€¢ Track your streak to stay motivated\nâ€¢ Don't break the chain - aim for daily progress";
+        fallbackResponse += "🔄 **Habit Building Tips:**\n- Start small and be consistent\n- Stack new habits onto existing ones\n- Track your streak to stay motivated\n- Don't break the chain - aim for daily progress";
       } else if (queryLower.includes('focus') || queryLower.includes('productivity')) {
-        fallbackResponse += "âš¡ **Focus & Productivity Tips:**\nâ€¢ Use the Pomodoro Technique (25min work, 5min break)\nâ€¢ Eliminate distractions during work sessions\nâ€¢ Tackle your most important task first thing\nâ€¢ Schedule breaks to maintain energy";
+        fallbackResponse += "⚡ **Focus & Productivity Tips:**\n- Use the Pomodoro Technique (25min work, 5min break)\n- Eliminate distractions during work sessions\n- Tackle your most important task first thing\n- Schedule breaks to maintain energy";
       } else {
-        fallbackResponse += "âœ¨ **General Productivity Advice:**\nâ€¢ Plan your day the night before\nâ€¢ Focus on progress, not perfection\nâ€¢ Use tools like Orbital Flow to track everything\nâ€¢ Review and adjust your systems regularly\n\nðŸ’¡ Try asking more specific questions about tasks, goals, habits, or focus when I'm back online!";
+        fallbackResponse += "✨ **General Productivity Advice:**\n- Plan your day the night before\n- Focus on progress, not perfection\n- Use tools like Orbital Flow to track everything\n- Review and adjust your systems regularly\n\n💡 Try asking more specific questions about tasks, goals, habits, or focus when I'm back online!";
       }
       
       const assistantMessage: Message = { role: 'assistant', content: fallbackResponse };
@@ -167,9 +173,11 @@ export function AiAssistant() {
                           ? 'bg-muted/50 rounded-tl-none'
                           : 'bg-primary text-primary-foreground rounded-tr-none'
                       }`}>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                          {message.content}
-                        </p>
+                        <div className="text-sm leading-relaxed whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
                       </div>
                       {message.role === 'user' && (
                         <Avatar className="h-8 w-8 border">

@@ -36,31 +36,29 @@ export default function DashboardPage() {
                 {/* Welcome Header */}
                 <WelcomeHeader />
 
-                {/* Main Dashboard Grid */}
-                <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-                    {/* Left Column - Tasks and Habits */}
-                    <div className="xl:col-span-8 space-y-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <TodaysFocus onTaskUpdate={refreshData} />
-                            <HabitTracker />
-                        </div>
-
-                        {/* AI Assistant - Full width on larger screens */}
-                        <div className="lg:block hidden">
-                            <AiAssistant />
-                        </div>
+                {/* Bento Dashboard Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    
+                    {/* Top Row: Focus takes up 2 cols, Chart takes 1 */}
+                    <div className="md:col-span-2 xl:col-span-2 h-full">
+                        <TodaysFocus onTaskUpdate={refreshData} />
+                    </div>
+                    <div className="md:col-span-2 xl:col-span-1 h-full">
+                        <ProductivityChart />
                     </div>
 
-                    {/* Right Sidebar - Analytics and Deadlines */}
-                    <div className="xl:col-span-4 space-y-6">
-                        <ProductivityChart />
+                    {/* Middle Row: Habits and Deadlines */}
+                    <div className="md:col-span-1 xl:col-span-2 h-full">
+                        <HabitTracker />
+                    </div>
+                    <div className="md:col-span-1 xl:col-span-1 h-full">
                         <UpcomingDeadlines />
                     </div>
-                </div>
 
-                {/* AI Assistant - Mobile/Tablet View */}
-                <div className="lg:hidden">
-                    <AiAssistant />
+                    {/* Bottom Row: AI Assistant full width */}
+                    <div className="md:col-span-2 xl:col-span-3">
+                        <AiAssistant />
+                    </div>
                 </div>
             </div>
         </div>

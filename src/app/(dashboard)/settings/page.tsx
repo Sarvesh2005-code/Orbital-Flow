@@ -1,4 +1,4 @@
-﻿// src/app/settings/page.tsx
+// src/app/settings/page.tsx
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -261,7 +261,7 @@ export default function SettingsPage() {
                 <div className="flex-1">
                   <h3 className="font-medium">{user?.email}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {user?.emailVerified ? 'âœ“ Verified' : 'âš ï¸ Email not verified'}
+                    {user?.emailVerified ? '✓ Verified' : '⚠️ Email not verified'}
                   </p>
                   {!user?.emailVerified && (
                     <Button 

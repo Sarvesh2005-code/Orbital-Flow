@@ -1,4 +1,4 @@
-﻿// src/components/layout/landing-page.tsx
+// src/components/layout/landing-page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -829,7 +829,7 @@ export function LandingPage() {
                                     </Button>
                                 </div>
                                 <p className={`text-sm mt-8 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                                    No credit card required â€¢ 14-day free trial â€¢ Cancel anytime â€¢ GDPR compliant
+                                    No credit card required • 14-day free trial • Cancel anytime • GDPR compliant
                                 </p>
                             </div>
                         </div>
@@ -958,7 +958,7 @@ export function LandingPage() {
                         </div>
                         <div className={`text-sm ${isDark ? 'text-zinc-500' : 'text-zinc-500'} text-center md:text-right`}>
                             <p>&copy; {new Date().getFullYear()} Orbital Flow, Inc. All rights reserved.</p>
-                            <p className="mt-1">Made with â¤ï¸ for creative minds worldwide</p>
+                            <p className="mt-1">Made with ❤️ for creative minds worldwide</p>
                         </div>
                     </div>
                 </div>
